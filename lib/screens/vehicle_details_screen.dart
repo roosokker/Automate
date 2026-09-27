@@ -1,15 +1,20 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import '../theme/phosphor_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../providers/car_provider.dart';
+import '../providers/specialist_provider.dart';
 import '../models/car.dart';
 import '../models/maintenance_record.dart';
-import '../models/maintenance_summary.dart';
 import '../widgets/record_details_modal.dart';
-import 'notifications_screen.dart';
 import '../widgets/notification_bell.dart';
-import 'profile_screen.dart';
+import '../widgets/odometer_sheet.dart';
+import '../widgets/maintenance_ui.dart';
+import '../widgets/ui.dart';
+import 'service_center_details_screen.dart';
 import 'specialists_list_screen.dart';
+import '../theme/app_colors.dart';
 
 class VehicleDetailsScreen extends StatefulWidget {
   const VehicleDetailsScreen({super.key});
@@ -38,6 +43,41 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen> {
     }
   }
 
+  Future<void> _onMenu(String value) async {
+    if (value == 'edit') {
+      Navigator.pushNamed(context, '/add-vehicle', arguments: _carId);
+    } else if (value == 'delete') {
+      final confirm = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Delete Vehicle', style: AmText.h4),
+          content: const Text('Are you sure you want to delete this vehicle? This action cannot be undone.', style: AmText.body),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('CANCEL', style: TextStyle(color: AppColors.textSecondary)),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('DELETE', style: TextStyle(color: AppColors.danger)),
+            ),
+          ],
+        ),
+      );
+
+      if (confirm == true && mounted) {
+        final provider = Provider.of<CarProvider>(context, listen: false);
+        final success = await provider.deleteCar(_carId!);
+        if (success && mounted) {
+          showAmToast(context, 'Vehicle deleted');
+          Navigator.pop(context); // Go back to dashboard
+        } else if (mounted) {
+          showAmToast(context, 'Failed to delete vehicle', error: true);
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_carId == null) {
@@ -47,362 +87,308 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen> {
     return Consumer<CarProvider>(
       builder: (context, provider, child) {
         final car = provider.getCar(_carId!);
-        if (car == null) return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        if (car == null) {
+          return const Scaffold(
+            body: AmBackground(child: Center(child: AmSpinner(size: 28))),
+          );
+        }
 
         return DefaultTabController(
-      length: 4,
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF8F9FF),
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A)),
-            onPressed: () => Navigator.pop(context),
-          ),
-          title: const Text(
-            'AutoMate',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF0F172A),
-            ),
-          ),
-          actions: [
-            const NotificationBell(),
-            PopupMenuButton<String>(
-              icon: const Icon(Icons.more_vert, color: Color(0xFF0F172A)),
-              onSelected: (value) async {
-                if (value == 'edit') {
-                  Navigator.pushNamed(context, '/add-vehicle', arguments: _carId);
-                } else if (value == 'delete') {
-                  final confirm = await showDialog<bool>(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Delete Vehicle'),
-                      content: const Text('Are you sure you want to delete this vehicle? This action cannot be undone.'),
-                      actions: [
-                        TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('CANCEL')),
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, true),
-                          child: const Text('DELETE', style: TextStyle(color: Colors.red)),
+          length: 4,
+          child: Scaffold(
+            body: AmBackground(
+              child: SafeArea(
+                bottom: false,
+                child: NestedScrollView(
+                  headerSliverBuilder: (context, innerBoxIsScrolled) {
+                    return [
+                      SliverToBoxAdapter(child: _buildHeader(context, car, provider)),
+                      SliverPersistentHeader(
+                        pinned: true,
+                        delegate: _SliverAppBarDelegate(
+                          TabBar(
+                            isScrollable: false,
+                            dividerColor: Colors.transparent,
+                            indicatorSize: TabBarIndicatorSize.tab,
+                            indicator: BoxDecoration(
+                              color: AppColors.accentTint,
+                              borderRadius: BorderRadius.circular(9),
+                              border: Border.all(color: AppColors.accent700),
+                            ),
+                            labelColor: AppColors.accent200,
+                            unselectedLabelColor: AppColors.textMuted,
+                            labelPadding: EdgeInsets.zero,
+                            overlayColor: WidgetStatePropertyAll(AppColors.accent.withValues(alpha: 0.06)),
+                            labelStyle: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500),
+                            unselectedLabelStyle: const TextStyle(fontSize: 12.5),
+                            tabs: const [
+                              Tab(height: 34, text: 'Overview'),
+                              Tab(height: 34, text: 'Services'),
+                              Tab(height: 34, text: 'Expenses'),
+                              Tab(height: 34, text: 'Reminders'),
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
-                  );
-
-                  if (confirm == true && mounted) {
-                    final provider = Provider.of<CarProvider>(context, listen: false);
-                    final success = await provider.deleteCar(_carId!);
-                    if (success && mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vehicle deleted')));
-                      Navigator.pop(context); // Go back to dashboard
-                    } else if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to delete vehicle')));
-                    }
-                  }
-                }
-              },
-              itemBuilder: (context) => [
-                const PopupMenuItem(
-                  value: 'edit',
-                  child: Text('Edit Vehicle'),
-                ),
-                const PopupMenuItem(
-                  value: 'delete',
-                  child: Text('Delete Vehicle', style: TextStyle(color: Colors.red)),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const ProfileScreen()),
-                  );
-                },
-                child: const CircleAvatar(
-                  radius: 14,
-                  backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=11'),
-                ),
-              ),
-            )
-          ],
-        ),
-        body: NestedScrollView(
-          headerSliverBuilder: (context, innerBoxIsScrolled) {
-            return [
-              SliverToBoxAdapter(
-                child: _buildHeader(context, car),
-              ),
-              SliverPersistentHeader(
-                pinned: true,
-                delegate: _SliverAppBarDelegate(
-                  const TabBar(
-                    isScrollable: true,
-                    labelColor: Color(0xFF0F172A),
-                    unselectedLabelColor: Color(0xFF515F74),
-                    indicatorColor: Color(0xFF0F172A),
-                    labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 1),
-                    tabs: [
-                      Tab(text: 'OVERVIEW'),
-                      Tab(text: 'SERVICES'),
-                      Tab(text: 'EXPENSES'),
-                      Tab(text: 'REMINDERS'),
+                      ),
+                    ];
+                  },
+                  body: TabBarView(
+                    children: [
+                      _OverviewTab(carId: _carId!),
+                      _ServicesTab(carId: _carId!),
+                      _ExpensesTab(carId: _carId!),
+                      _RemindersTab(carId: _carId!),
                     ],
                   ),
                 ),
               ),
-            ];
-          },
-          body: TabBarView(
-            children: [
-              _OverviewTab(carId: _carId!),
-              _ServicesTab(carId: _carId!),
-              _ExpensesTab(carId: _carId!),
-              _RemindersTab(carId: _carId!),
-            ],
+            ),
+            floatingActionButton: _Fab(
+              onPressed: () {
+                Navigator.pushNamed(context, '/add-record', arguments: _carId!);
+              },
+            ),
           ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.pushNamed(context, '/add-record', arguments: _carId!);
-          },
-          backgroundColor: Theme.of(context).primaryColor,
-          child: const Icon(Icons.add, color: Colors.white),
-        ),
-      ),
-    );
-  });
-}
-
-  void _showUpdateMileageModal(BuildContext context, Car car) {
-    final TextEditingController mileageController = TextEditingController(text: car.currentMileage.toString());
-    bool isLoading = false;
-    String? errorText;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-                left: 24,
-                right: 24,
-                top: 24,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Text('Update Mileage', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 8),
-                  Text('Current mileage: ${car.currentMileage} km', style: const TextStyle(color: Color(0xFF515F74))),
-                  const SizedBox(height: 24),
-                  TextField(
-                    controller: mileageController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: 'New Mileage (km)',
-                      prefixIcon: const Icon(Icons.speed),
-                      errorText: errorText,
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: isLoading
-                        ? null
-                        : () async {
-                            final input = int.tryParse(mileageController.text.trim());
-                            if (input == null) {
-                              setState(() => errorText = 'Please enter a valid number');
-                              return;
-                            }
-                            if (input <= car.currentMileage) {
-                              setState(() => errorText = 'New mileage must be greater than current');
-                              return;
-                            }
-
-                            setState(() {
-                              isLoading = true;
-                              errorText = null;
-                            });
-
-                            final provider = Provider.of<CarProvider>(context, listen: false);
-                            final success = await provider.logMileage(car.id, input);
-
-                            if (!context.mounted) return;
-
-                            if (success) {
-                              Navigator.pop(context);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Mileage updated successfully!'), backgroundColor: Colors.green),
-                              );
-                            } else {
-                              setState(() {
-                                isLoading = false;
-                                errorText = 'Failed to update mileage. Please try again.';
-                              });
-                            }
-                          },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF0F172A),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                    ),
-                    child: isLoading
-                        ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                        : const Text('Save Odometer Reading', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                  ),
-                  const SizedBox(height: 32),
-                ],
-              ),
-            );
-          },
         );
       },
     );
   }
 
-  Widget _buildHeader(BuildContext context, Car car) {
-    final numberFormat = NumberFormat('#,##0');
-    final formattedMileage = '${numberFormat.format(car.currentMileage)} km';
-    
-    return Container(
-      color: Colors.white,
+  Widget _buildHeader(BuildContext context, Car car, CarProvider provider) {
+    final summary = provider.getSummary(car.id);
+    final status = summaryStatus(summary);
+    final health = healthScore(summary);
+    final glow = status == MStatus.ok || status == MStatus.soon ? AppColors.accent : status.color;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 6, 20, 14),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Vehicle Image Container
-          Container(
-            height: 200,
-            width: double.infinity,
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: const Color(0xFF2C2C3E),
-              borderRadius: BorderRadius.circular(8),
-              image: const DecorationImage(
-                image: NetworkImage('https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=2070&auto=format&fit=crop'), // Placeholder Mercedes image
-                fit: BoxFit.cover,
+          Rise(
+            offset: 0,
+            durationMs: 400,
+            child: Row(
+              children: [
+                const AmBackButton(),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('${car.make} ${car.model}', overflow: TextOverflow.ellipsis, style: AmText.h3),
+                      Text('${car.year} · Plate: Not Assigned', style: AmText.sub),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 10),
+                const NotificationBell(size: 44),
+                const SizedBox(width: 8),
+                PopupMenuButton<String>(
+                  onSelected: _onMenu,
+                  color: AppColors.surfaceHigh,
+                  itemBuilder: (context) => [
+                    const PopupMenuItem(
+                      value: 'edit',
+                      child: Row(children: [Icon(PhosphorIconsRegular.pencilSimple, size: 18), SizedBox(width: 10), Text('Edit Vehicle')]),
+                    ),
+                    const PopupMenuItem(
+                      value: 'delete',
+                      child: Row(
+                        children: [
+                          Icon(PhosphorIconsRegular.trash, size: 18, color: AppColors.danger),
+                          SizedBox(width: 10),
+                          Text('Delete Vehicle', style: TextStyle(color: AppColors.danger)),
+                        ],
+                      ),
+                    ),
+                  ],
+                  child: const AmIconButton(icon: PhosphorIconsRegular.dotsThreeVertical),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Hero
+          Rise(
+            child: Container(
+              height: 150,
+              clipBehavior: Clip.antiAlias,
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.neutral800),
+                gradient: RadialGradient(center: const Alignment(0, 1.25), radius: 0.95, colors: [glow.withValues(alpha: 0.42), AppColors.surface.withValues(alpha: 0)], stops: const [0, 0.7]),
+              ),
+              child: Stack(
+                children: [
+                  const Center(
+                    child: Icon(
+                      PhosphorIconsRegular.carProfile,
+                      size: 100,
+                      color: AppColors.textSecondary,
+                      shadows: [Shadow(color: Color(0x80000000), blurRadius: 16, offset: Offset(0, 8))],
+                    ),
+                  ),
+                  PositionedDirectional(
+                    top: 12,
+                    start: 12,
+                    child: AmTag(
+                      summary == null ? 'Active' : healthLabel(summary),
+                      icon: PhosphorIconsFill.circle,
+                      fontSize: 11,
+                      background: status == MStatus.ok ? AppColors.accentDeep : status.tint,
+                      foreground: status == MStatus.ok ? AppColors.accent100 : status.color,
+                    ),
+                  ),
+                  PositionedDirectional(
+                    top: 8,
+                    end: 8,
+                    child: AmIconButton(
+                      icon: PhosphorIconsRegular.pencilSimple,
+                      size: 38,
+                      radius: 12,
+                      onPressed: () => Navigator.pushNamed(context, '/add-vehicle', arguments: car.id),
+                    ),
+                  ),
+                ],
               ),
             ),
-            child: Stack(
-              children: [
-                Positioned(
-                  top: 12,
-                  left: 12,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.9),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.circle, color: Color(0xFF0F172A), size: 8),
-                        SizedBox(width: 6),
-                        Text('Active', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
           ),
-          
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('${car.year}', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF45464D))),
-                    const SizedBox(height: 4),
-                    Text(car.displayName, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-                    const SizedBox(height: 4),
-                    Text('Plate: Not Assigned', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: const Color(0xFF0F172A).withValues(alpha: 0.8))),
-                  ],
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, '/add-vehicle', arguments: car.id);
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: const Color(0xFFC6C6CD)),
-                      borderRadius: BorderRadius.circular(8),
+          const SizedBox(height: 10),
+          Rise(
+            delayMs: 80,
+            child: IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: AmCard(
+                      onTap: () => showOdometerSheet(context, car),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('ODOMETER', style: TextStyle(fontSize: 10, letterSpacing: 1, color: AppColors.textMuted)),
+                              Icon(PhosphorIconsRegular.pencilSimple, size: 15, color: AppColors.accent),
+                            ],
+                          ),
+                          const SizedBox(height: 3),
+                          Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(text: kmFormat.format(car.currentMileage)),
+                                const TextSpan(
+                                  text: ' km',
+                                  style: TextStyle(fontSize: 13, color: AppColors.textMuted, letterSpacing: 0),
+                                ),
+                              ],
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500, letterSpacing: -0.4, color: AppColors.text, fontFeatures: tabular),
+                          ),
+                          const Text('Tap to update', style: AmText.sub),
+                        ],
+                      ),
                     ),
-                    child: const Icon(Icons.edit, size: 20, color: Color(0xFF0F172A)),
                   ),
-                ),
-              ],
-            ),
-          ),
-
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () => _showUpdateMileageModal(context, car),
-                    child: _buildInfoCard(Icons.speed, 'Odometer', formattedMileage, showEdit: true),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: AmCard(
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 46,
+                            height: 46,
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                TweenAnimationBuilder<double>(
+                                  tween: Tween(begin: 0, end: health / 100),
+                                  duration: const Duration(milliseconds: 1300),
+                                  curve: const Cubic(0.2, 0.8, 0.2, 1),
+                                  builder: (context, v, _) => CustomPaint(
+                                    size: const Size(46, 46),
+                                    painter: RingPainter(progress: v, color: AppColors.accent, stroke: 5, glow: false),
+                                  ),
+                                ),
+                                Text(
+                                  '$health',
+                                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.text, fontFeatures: tabular),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text('HEALTH', style: TextStyle(fontSize: 10, letterSpacing: 1, color: AppColors.textMuted)),
+                                Text(
+                                  summary?.statusText ?? 'Calculating...',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(fontSize: 14, color: status == MStatus.ok ? AppColors.text : status.color),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildInfoCard(Icons.settings_suggest, 'Engine', 'Varies'),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildInfoCard(IconData icon, String title, String value, {bool showEdit = false}) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FF),
-        border: Border.all(color: const Color(0xFFE5EEFF)),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Icon(icon, size: 14, color: const Color(0xFF515F74)),
-                  const SizedBox(width: 6),
-                  Text(title, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF45464D))),
-                ],
-              ),
-              if (showEdit)
-                const Icon(Icons.edit, size: 14, color: Color(0xFF515F74)),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-        ],
+class _Fab extends StatelessWidget {
+  final VoidCallback onPressed;
+  const _Fab({required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return Pressable(
+      scale: 0.92,
+      onTap: onPressed,
+      child: Container(
+        width: 58,
+        height: 58,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          gradient: const LinearGradient(begin: Alignment(-0.4, -1), end: Alignment(0.4, 1), colors: [AppColors.accentDeep, AppColors.neutral900]),
+          border: Border.all(color: AppColors.accent),
+          boxShadow: [
+            BoxShadow(color: AppColors.accent.withValues(alpha: 0.45), blurRadius: 26),
+            const BoxShadow(color: Color(0x80000000), blurRadius: 20, offset: Offset(0, 8)),
+          ],
+        ),
+        child: const Icon(PhosphorIconsRegular.plus, size: 24, color: AppColors.accent200),
       ),
     );
+  }
+}
+
+MStatus _statusFromText(String s) {
+  switch (s) {
+    case 'Overdue':
+      return MStatus.overdue;
+    case 'Due':
+      return MStatus.due;
+    case 'Upcoming':
+      return MStatus.soon;
+    default:
+      return MStatus.ok;
   }
 }
 
@@ -415,401 +401,337 @@ class _OverviewTab extends StatelessWidget {
     return Consumer<CarProvider>(
       builder: (context, provider, child) {
         final summary = provider.getSummary(carId);
-        final reminders = provider.getReminders(carId);
+        final car = provider.getCar(carId);
+        final reminders = sortedReminders(provider.getReminders(carId), car);
         final records = provider.getRecords(carId);
-        
+
         // Calculate health values based on arrays
         final oilStatus = summary?.getStatusFor('ENGINE_OIL') ?? 'Good';
         final tireStatus = summary?.getStatusFor('TIRE_REPLACEMENT') ?? 'Good';
         final batteryStatus = summary?.getStatusFor('BATTERY') ?? 'Good';
-        
-        return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Vehicle Health', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 12),
-          GridView.count(
-            crossAxisCount: 2,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: 1.8,
-            children: [
-              _buildHealthCard(Icons.oil_barrel_outlined, 'Oil Life', oilStatus, oilStatus == 'Overdue' || oilStatus == 'Due'),
-              _buildHealthCard(Icons.tire_repair_outlined, 'Tires', tireStatus, tireStatus == 'Overdue' || tireStatus == 'Due'),
-              _buildHealthCard(Icons.battery_charging_full_outlined, 'Battery', batteryStatus, batteryStatus == 'Overdue' || batteryStatus == 'Due'),
-              _buildHealthCard(Icons.local_gas_station_outlined, 'Fuel Level', 'N/A', false),
-            ],
-          ),
-          const SizedBox(height: 24),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        return SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20, 14, 20, 100),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Upcoming Reminders', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              GestureDetector(
-                onTap: () => DefaultTabController.of(context).animateTo(3),
-                child: Text('View All', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A).withValues(alpha: 0.8))),
+              const SectionLabel('Vehicle Health'),
+              const SizedBox(height: 10),
+              GridView.count(
+                crossAxisCount: 2,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                childAspectRatio: 2.3,
+                children: [
+                  _buildHealthCard(PhosphorIconsRegular.drop, 'Oil Life', oilStatus, 0),
+                  _buildHealthCard(PhosphorIconsRegular.arrowsClockwise, 'Tires', tireStatus, 1),
+                  _buildHealthCard(PhosphorIconsRegular.carBattery, 'Battery', batteryStatus, 2),
+                  _buildHealthCard(PhosphorIconsRegular.gasPump, 'Fuel Level', 'N/A', 3),
+                ],
               ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          if (reminders.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text('No upcoming reminders', style: TextStyle(color: Color(0xFF515F74))),
-            )
-          else
-            ...reminders.map((reminder) {
-              final isUrgent = reminder.status == 'OVERDUE' || reminder.status == 'DUE';
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: _buildReminderCard(
-                  Icons.warning_amber_rounded, 
-                  reminder.maintenanceType, 
-                  'Status: ${reminder.status}', 
-                  'View', 
-                  isUrgent,
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/reminder-details', arguments: {
-                      'reminder': reminder,
-                      'carId': carId,
-                    });
+              const SizedBox(height: 24),
+
+              SectionLabel('Upcoming Reminders', trailing: AmLink('View All', fontSize: 12.5, onTap: () => DefaultTabController.of(context).animateTo(3))),
+              const SizedBox(height: 10),
+              if (reminders.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: Text('No upcoming reminders', style: TextStyle(color: AppColors.textMuted)),
+                )
+              else
+                ...reminders.asMap().entries.map((entry) {
+                  final view = entry.value;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Rise(
+                      delayMs: math.min(entry.key, 6) * 50,
+                      child: _ReminderCard(
+                        view: view,
+                        onTap: () {
+                          Navigator.pushNamed(context, '/reminder-details', arguments: {'reminder': view.reminder, 'carId': carId});
+                        },
+                      ),
+                    ),
+                  );
+                }),
+              const SizedBox(height: 14),
+
+              SectionLabel(
+                'Nearby Specialists',
+                trailing: AmLink(
+                  'View All',
+                  fontSize: 12.5,
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const SpecialistsListScreen(showBack: true)));
                   },
                 ),
-              );
-            }),
-          const SizedBox(height: 24),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Row(
-                children: [
-                  Icon(Icons.storefront, size: 20, color: Color(0xFF0F172A)),
-                  SizedBox(width: 8),
-                  Text('Nearby Specialists', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                ],
               ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const SpecialistsListScreen()),
+              const SizedBox(height: 10),
+              Consumer<SpecialistProvider>(
+                builder: (context, sp, _) {
+                  final centers = sp.serviceCenters.take(4).toList();
+                  if (centers.isEmpty) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: Text('No service centers found nearby.', style: TextStyle(color: AppColors.textMuted)),
+                    );
+                  }
+                  return SizedBox(
+                    height: 142,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      clipBehavior: Clip.none,
+                      itemCount: centers.length,
+                      separatorBuilder: (_, _) => const SizedBox(width: 10),
+                      itemBuilder: (context, i) {
+                        final c = centers[i];
+                        final authorized = c.type == 'AUTHORIZED';
+                        return SizedBox(
+                          width: 240,
+                          child: AmCard(
+                            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ServiceCenterDetailsScreen(serviceCenter: c))),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                AmTag(
+                                  authorized ? 'Verified specialist' : c.type.replaceAll('_', ' '),
+                                  icon: authorized ? PhosphorIconsFill.sealCheck : PhosphorIconsRegular.wrench,
+                                  background: authorized ? AppColors.accentDeep : AppColors.neutral800,
+                                  foreground: authorized ? AppColors.accent100 : AppColors.neutral200,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  c.name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(fontSize: 14.5, color: AppColors.text),
+                                ),
+                                Text(c.city, maxLines: 1, overflow: TextOverflow.ellipsis, style: AmText.sub),
+                                const Spacer(),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: AmButton.secondary(label: 'Call', icon: PhosphorIconsRegular.phone, height: 34, radius: 8, fontSize: 12.5, onPressed: () {}),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: AmButton(label: 'Route', icon: PhosphorIconsRegular.navigationArrow, height: 34, radius: 8, fontSize: 12.5, onPressed: () {}),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   );
                 },
-                child: Text('View All', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A).withValues(alpha: 0.8))),
+              ),
+              const SizedBox(height: 24),
+
+              const SectionLabel('Service Timeline'),
+              const SizedBox(height: 14),
+              if (records.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: Text('No service history available', style: TextStyle(color: AppColors.textMuted)),
+                )
+              else
+                _Timeline(records: records.take(3).toList(), onTap: (record) => showRecordDetailsModal(context, record)),
+
+              const SizedBox(height: 4),
+              AmLink('View Full History', icon: PhosphorIconsRegular.arrowRight, onTap: () => DefaultTabController.of(context).animateTo(2)),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildHealthCard(IconData icon, String title, String value, int i) {
+    final st = value == 'N/A' ? MStatus.ok : _statusFromText(value);
+    final alert = st == MStatus.overdue || st == MStatus.due;
+    return Rise(
+      delayMs: i * 50,
+      child: AmCard(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        color: alert ? null : AppColors.surface,
+        gradient: alert ? LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [st.tint, AppColors.surface]) : null,
+        edge: alert ? st.edge : AppColors.neutral800,
+        child: Row(
+          children: [
+            IconTile(icon: icon, size: 36, radius: 11, color: alert ? st.color : AppColors.accent300, background: alert ? st.tint : AppColors.accentTint),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: const TextStyle(fontSize: 11, color: AppColors.textMuted)),
+                  Text(value, style: TextStyle(fontSize: 14, color: alert ? st.color : (st == MStatus.soon ? st.color : AppColors.text))),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Maintenance item card: tinted icon, name, due point, km left and a progress bar.
+class _ReminderCard extends StatelessWidget {
+  final ReminderView view;
+  final VoidCallback? onTap;
+  const _ReminderCard({required this.view, this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = view.status.color;
+    final urgent = view.status == MStatus.overdue || view.status == MStatus.due;
+    return AmCard(
+      onTap: onTap,
+      edge: urgent ? view.status.edge : AppColors.neutral800,
+      child: Column(
+        children: [
+          Row(
+            children: [
+              IconTile(icon: view.icon, color: color, background: view.status.tint),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(view.name, style: const TextStyle(fontSize: 15, color: AppColors.text)),
+                    Text(view.dueAt, style: AmText.sub),
+                  ],
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    view.leftLabel,
+                    style: TextStyle(fontSize: 14, color: color, fontFeatures: tabular),
+                  ),
+                  Text(view.status.label, style: const TextStyle(fontSize: 11, color: AppColors.textMuted)),
+                ],
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                _buildSpecialistCard('Elite German Auto', 'Mercedes Specialist', '2.4 km away', '4.8 (124)'),
-                const SizedBox(width: 12),
-                _buildSpecialistCard('Tire Hub Cairo', 'Tire Center', '1.1 km away', '4.5 (89)'),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          const Text('Service Timeline', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 16),
-          if (records.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text('No service history available', style: TextStyle(color: Color(0xFF515F74))),
-            )
-          else
-            ...records.take(3).toList().asMap().entries.map((entry) {
-              final index = entry.key;
-              final record = entry.value;
-              final numberFormat = NumberFormat('#,##0');
-              final formattedMileage = '${numberFormat.format(record.mileageAtService)} km';
-              final formattedDate = DateFormat('MMM dd, yyyy').format(DateTime.parse(record.date).toLocal());
-              return _buildTimelineItem(
-                '$formattedDate • $formattedMileage', 
-                record.maintenanceType, 
-                record.description, 
-                isFirst: index == 0,
-                isLast: index == 2 || index == records.length - 1,
-                onTap: () => showRecordDetailsModal(context, record),
-              );
-            }),
-          
-          const SizedBox(height: 16),
-          TextButton(
-            onPressed: () => DefaultTabController.of(context).animateTo(2),
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('View Full History', style: TextStyle(color: Color(0xFF515F74))),
-                SizedBox(width: 4),
-                Icon(Icons.arrow_forward, size: 16, color: Color(0xFF515F74)),
-              ],
-            ),
-          )
-        ],
-      ),
-    );
-    });
-  }
-
-  Widget _buildHealthCard(IconData icon, String title, String value, bool isAlert) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: isAlert ? const Color(0xFFFFF5F5) : Colors.white,
-        border: Border.all(color: isAlert ? const Color(0xFFFFCDD2) : const Color(0xFFE5EEFF)),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 20, color: isAlert ? const Color(0xFFD32F2F) : const Color(0xFF0F172A)),
-          const SizedBox(height: 4),
-          Text(title, style: TextStyle(fontSize: 10, color: isAlert ? const Color(0xFFD32F2F) : const Color(0xFF515F74), fontWeight: FontWeight.bold)),
-          const SizedBox(height: 2),
-          Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: isAlert ? const Color(0xFFD32F2F) : const Color(0xFF0F172A))),
+          const SizedBox(height: 11),
+          GlowBar(value: view.progress, color: color, glow: urgent),
         ],
       ),
     );
   }
+}
 
-  Widget _buildReminderCard(IconData icon, String title, String subtitle, String action, bool isUrgent, {VoidCallback? onPressed}) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: const Color(0xFFE5EEFF)),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: isUrgent ? const Color(0xFFFFEBEE) : const Color(0xFFE5EEFF),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(icon, color: isUrgent ? const Color(0xFFD32F2F) : const Color(0xFF515F74), size: 20),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title.replaceAll('_', ' '), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                const SizedBox(height: 2),
-                Text(subtitle, style: const TextStyle(fontSize: 12, color: Color(0xFF515F74))),
-              ],
-            ),
-          ),
-          ElevatedButton(
-            onPressed: onPressed ?? () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: isUrgent ? const Color(0xFF0F172A) : Colors.white,
-              foregroundColor: isUrgent ? Colors.white : const Color(0xFF0F172A),
-              side: isUrgent ? BorderSide.none : const BorderSide(color: Color(0xFFC6C6CD)),
-              elevation: 0,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              minimumSize: const Size(0, 36),
-            ),
-            child: Text(action, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-          ),
-        ],
-      ),
-    );
-  }
+/// Vertical timeline with a fading accent spine.
+class _Timeline extends StatelessWidget {
+  final List<MaintenanceRecord> records;
+  final void Function(MaintenanceRecord) onTap;
+  final bool showPrice;
+  const _Timeline({required this.records, required this.onTap, this.showPrice = false});
 
-  Widget _buildSpecialistCard(String title, String subtitle, String distance, String rating) {
-    return Container(
-      width: 240,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: const Color(0xFFE5EEFF)),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 100,
+  @override
+  Widget build(BuildContext context) {
+    final numberFormat = NumberFormat('#,##0');
+    return Stack(
+      children: [
+        PositionedDirectional(
+          start: 9,
+          top: 8,
+          bottom: 26,
+          child: Container(
+            width: 2,
             decoration: const BoxDecoration(
-              color: Color(0xFFDCE9FF),
-              borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
-            ),
-            child: Stack(
-              children: [
-                const Center(child: Icon(Icons.image, color: Color(0xFF515F74))),
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.star, size: 10),
-                        const SizedBox(width: 2),
-                        Text(rating, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+              gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppColors.accent, AppColors.neutral800, Color(0x003F424D)], stops: [0, 0.45, 1]),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                Text(subtitle, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    const Icon(Icons.location_on_outlined, size: 14, color: Color(0xFF515F74)),
-                    const SizedBox(width: 4),
-                    Text(distance, style: const TextStyle(fontSize: 12, color: Color(0xFF515F74))),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () {},
-                        style: OutlinedButton.styleFrom(
-                          backgroundColor: const Color(0xFFE5EEFF),
-                          side: BorderSide.none,
-                          padding: EdgeInsets.zero,
-                          minimumSize: const Size(0, 32),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.phone_outlined, size: 14, color: Color(0xFF0F172A)),
-                            SizedBox(width: 4),
-                            Text('Call', style: TextStyle(fontSize: 12, color: Color(0xFF0F172A), fontWeight: FontWeight.bold)),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
-                          padding: EdgeInsets.zero,
-                          minimumSize: const Size(0, 32),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.directions, size: 14, color: Colors.white),
-                            SizedBox(width: 4),
-                            Text('Route', style: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold)),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTimelineItem(String date, String title, String description, {bool isFirst = false, bool isLast = false, VoidCallback? onTap}) {
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SizedBox(
-            width: 24,
-            child: Column(
-              children: [
-                Container(
-                  width: 2,
-                  height: 12,
-                  color: isFirst ? Colors.transparent : const Color(0xFFC6C6CD),
-                ),
-                Container(
-                  width: 12,
-                  height: 12,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: isFirst ? const Color(0xFF0F172A) : const Color(0xFFC6C6CD), width: 2),
-                  ),
-                  child: isFirst ? Center(child: Container(width: 4, height: 4, decoration: const BoxDecoration(color: Color(0xFF0F172A), shape: BoxShape.circle))) : null,
-                ),
-                Expanded(
-                  child: Container(
-                    width: 2,
-                    color: isLast ? Colors.transparent : const Color(0xFFC6C6CD),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 24.0),
+        ),
+        Column(
+          children: records.asMap().entries.map((entry) {
+            final i = entry.key;
+            final record = entry.value;
+            final formattedDate = DateFormat('MMM dd, yyyy').format(DateTime.parse(record.date).toLocal());
+            final dotColor = i == 0 ? AppColors.accent : AppColors.neutral700;
+            return Rise(
+              delayMs: math.min(i, 6) * 60,
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
-                onTap: onTap,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(date, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-                  const SizedBox(height: 8),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: const Color(0xFFE5EEFF)),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(Icons.build_circle_outlined, size: 16, color: Color(0xFF0F172A)),
-                            const SizedBox(width: 8),
-                            Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-                          ],
+                onTap: () => onTap(record),
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 3, top: 3),
+                        child: Container(
+                          width: 14,
+                          height: 14,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.bg,
+                            border: Border.all(color: dotColor, width: 2),
+                            boxShadow: i == 0 ? AppColors.glow(0.8, 8) : null,
+                          ),
                         ),
-                        if (description.isNotEmpty) ...[
-                          const SizedBox(height: 4),
-                          Text(description, style: const TextStyle(fontSize: 12, color: Color(0xFF515F74))),
-                        ],
-                      ],
-                    ),
+                      ),
+                      const SizedBox(width: 13),
+                      Expanded(
+                        child: AmCard(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(typeIcon(record.maintenanceType), size: 16, color: AppColors.accent300),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(typeLabel(record.maintenanceType), style: const TextStyle(fontSize: 14.5, color: AppColors.text)),
+                                  ),
+                                  if (showPrice)
+                                    Text(
+                                      'EGP ${record.cost.toStringAsFixed(2)}',
+                                      style: const TextStyle(fontSize: 13.5, color: AppColors.text, fontFeatures: tabular),
+                                    ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Text('$formattedDate · ${numberFormat.format(record.mileageAtService)} km', style: AmText.sub),
+                              if (showPrice) ...[
+                                const SizedBox(height: 6),
+                                Row(
+                                  children: [
+                                    const Icon(PhosphorIconsRegular.sealCheck, size: 13, color: AppColors.textMuted),
+                                    const SizedBox(width: 4),
+                                    Expanded(
+                                      child: Text(record.serviceCenterId ?? 'Verified Workshop', maxLines: 1, overflow: TextOverflow.ellipsis, style: AmText.sub),
+                                    ),
+                                  ],
+                                ),
+                              ] else if (record.description.isNotEmpty) ...[
+                                const SizedBox(height: 4),
+                                Text(record.description, style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-              ),
-            ),
-          ),
-        ],
-      ),
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 }
@@ -823,191 +745,54 @@ class _ServicesTab extends StatelessWidget {
     return Consumer<CarProvider>(
       builder: (context, provider, child) {
         final records = provider.getRecords(carId);
-        final numberFormat = NumberFormat('#,##0');
-        
+
         return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          padding: const EdgeInsets.fromLTRB(20, 14, 20, 100),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Scheduled Services', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              const Icon(Icons.calendar_month, color: Color(0xFF515F74)),
-            ],
-          ),
-          const SizedBox(height: 12),
-          GestureDetector(
-            onTap: () => showScheduledServiceModal(context, 'Major Engine Service', 'Due in 1,240 km • Oct 24, 2024'),
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: const Color(0xFFE5EEFF)),
-                borderRadius: BorderRadius.circular(8),
-              ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFDCE9FF),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(Icons.settings_suggest, color: Color(0xFF0F172A)),
-                ),
-                const SizedBox(width: 16),
-                const Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+              const SectionLabel('Scheduled Services', trailing: Icon(PhosphorIconsRegular.calendarBlank, size: 18, color: AppColors.textMuted)),
+              const SizedBox(height: 10),
+              Rise(
+                child: AmCard(
+                  radius: 16,
+                  gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppColors.accentTint, AppColors.surface], stops: [0, 0.7]),
+                  edge: AppColors.accentDeep,
+                  onTap: () => showScheduledServiceModal(context, 'Major Engine Service', 'Due in 1,240 km • Oct 24, 2024'),
+                  child: Row(
                     children: [
-                      Text('Major Engine Service', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-                      SizedBox(height: 4),
-                      Text('Due in 1,240 km • Oct 24, 2024', style: TextStyle(fontSize: 12, color: Color(0xFF515F74))),
+                      const IconTile(icon: PhosphorIconsRegular.gearSix, size: 44, radius: 13, edge: AppColors.accentDeep),
+                      const SizedBox(width: 12),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Major Engine Service', style: TextStyle(fontSize: 14.5, color: AppColors.text)),
+                            SizedBox(height: 2),
+                            Text('Due in 1,240 km • Oct 24, 2024', style: AmText.sub),
+                          ],
+                        ),
+                      ),
+                      AmButton(label: 'BOOK', height: 36, fontSize: 12.5, radius: 10, expand: false, padding: const EdgeInsets.symmetric(horizontal: 14), onPressed: () {}),
                     ],
                   ),
                 ),
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    minimumSize: const Size(0, 36),
-                  ),
-                  child: const Text('BOOK', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                ),
-              ],
-            ),
-            ),
-          ),
-          const SizedBox(height: 32),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('Service History', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () => DefaultTabController.of(context).animateTo(2),
-                child: Row(
-                  children: [
-                    const Text('VIEW ALL', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
-                    const SizedBox(width: 4),
-                    const Icon(Icons.chevron_right, size: 16),
-                  ],
-                ),
               ),
+              const SizedBox(height: 26),
+
+              SectionLabel('Service History', trailing: AmLink('View All', fontSize: 12.5, onTap: () => DefaultTabController.of(context).animateTo(2))),
+              const SizedBox(height: 14),
+              if (records.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: Text('No service history available', style: TextStyle(color: AppColors.textMuted)),
+                )
+              else
+                _Timeline(records: records, showPrice: true, onTap: (record) => showRecordDetailsModal(context, record)),
             ],
           ),
-          const SizedBox(height: 16),
-          const SizedBox(height: 16),
-          if (records.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text('No service history available', style: TextStyle(color: Color(0xFF515F74))),
-            )
-          else
-            ...records.asMap().entries.map((entry) {
-              final index = entry.key;
-              final record = entry.value;
-              final formattedMileage = '${numberFormat.format(record.mileageAtService)} km';
-              final formattedDate = DateFormat('MMM dd, yyyy').format(DateTime.parse(record.date).toLocal());
-              return _buildHistoryItem(
-                formattedDate, 
-                'EGP ${record.cost.toStringAsFixed(2)}', 
-                record.maintenanceType, 
-                formattedMileage, 
-                record.serviceCenterId ?? 'Verified Workshop', 
-                isFirst: index == 0, 
-                isLast: index == records.length - 1,
-                onTap: () => showRecordDetailsModal(context, record),
-              );
-            }),
-        ],
-      ),
-    );
-    });
-  }
-
-  Widget _buildHistoryItem(String date, String price, String title, String mileage, String footerTag, {bool isFirst = false, bool isLast = false, VoidCallback? onTap}) {
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SizedBox(
-            width: 24,
-            child: Column(
-              children: [
-                Container(
-                  width: 1,
-                  height: 16,
-                  color: isFirst ? Colors.transparent : const Color(0xFFC6C6CD),
-                ),
-                Container(
-                  width: 14,
-                  height: 14,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white,
-                    border: Border.all(color: isFirst ? const Color(0xFF0F172A) : const Color(0xFFC6C6CD), width: 2),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    width: 1,
-                    color: isLast ? Colors.transparent : const Color(0xFFC6C6CD),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 24.0),
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: onTap,
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: const Color(0xFFE5EEFF)),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(date, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1, color: Color(0xFF0F172A))),
-                        Text(price, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(title, style: const TextStyle(fontSize: 16, color: Color(0xFF0F172A))),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        const Icon(Icons.speed, size: 14, color: Color(0xFF515F74)),
-                        const SizedBox(width: 4),
-                        Text(mileage, style: const TextStyle(fontSize: 12, color: Color(0xFF515F74))),
-                        const SizedBox(width: 16),
-                        const Icon(Icons.verified_outlined, size: 14, color: Color(0xFF515F74)),
-                        const SizedBox(width: 4),
-                        Expanded(child: Text(footerTag, style: const TextStyle(fontSize: 12, color: Color(0xFF515F74)), overflow: TextOverflow.ellipsis)),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
@@ -1018,15 +803,24 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   final TabBar _tabBar;
 
   @override
-  double get minExtent => _tabBar.preferredSize.height;
+  double get minExtent => 54;
   @override
-  double get maxExtent => _tabBar.preferredSize.height;
+  double get maxExtent => 54;
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
-      color: Colors.white,
-      child: _tabBar,
+      color: AppColors.bg.withValues(alpha: overlapsContent || shrinkOffset > 0 ? 0.96 : 0),
+      padding: const EdgeInsets.fromLTRB(20, 6, 20, 6),
+      child: Container(
+        padding: const EdgeInsets.all(3),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.neutral800),
+        ),
+        child: _tabBar,
+      ),
     );
   }
 
@@ -1043,88 +837,106 @@ class _ExpensesTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<CarProvider>(builder: (context, provider, child) {
-      final records = provider.getRecords(carId);
-      final totalExpenses = records.fold<double>(0.0, (sum, record) => sum + record.cost);
-      final numberFormat = NumberFormat('#,##0.00');
+    return Consumer<CarProvider>(
+      builder: (context, provider, child) {
+        final records = provider.getRecords(carId);
+        final totalExpenses = records.fold<double>(0.0, (sum, record) => sum + record.cost);
+        final numberFormat = NumberFormat('#,##0.00');
 
-      return SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: const Color(0xFF0F172A),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(Icons.account_balance_wallet, color: Colors.white, size: 32),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('Total Maintenance Expenses', style: TextStyle(color: Colors.white70, fontSize: 14)),
-                        const SizedBox(height: 4),
-                        Text('EGP ${numberFormat.format(totalExpenses)}', style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            const Text('Expense History', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            if (records.isEmpty)
-              const Center(child: Padding(
-                padding: EdgeInsets.all(32.0),
-                child: Text('No expenses recorded yet', style: TextStyle(color: Color(0xFF515F74))),
-              ))
-            else
-              ...records.map((record) => GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () => showRecordDetailsModal(context, record),
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFFE5EEFF)),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+        return SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20, 14, 20, 100),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Rise(
+                child: AmCard(
+                  radius: 16,
+                  padding: const EdgeInsets.all(16),
+                  gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppColors.section, AppColors.accentTint], stops: [0, 0.75]),
+                  edge: AppColors.sectionGhost,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Total Maintenance Expenses', style: TextStyle(color: AppColors.accent200, fontSize: 12.5)),
+                      const SizedBox(height: 4),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
                         children: [
-                          Text(record.maintenanceType.replaceAll('_', ' '), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                          const SizedBox(height: 4),
-                          Text(DateFormat('MMM dd, yyyy').format(DateTime.parse(record.date).toLocal()), style: const TextStyle(color: Color(0xFF515F74), fontSize: 12)),
+                          const Text('EGP', style: TextStyle(fontSize: 14, color: AppColors.accent200)),
+                          const SizedBox(width: 8),
+                          Flexible(
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: CountUp(
+                                value: totalExpenses,
+                                format: (v) => numberFormat.format(v),
+                                style: const TextStyle(fontSize: 36, fontWeight: FontWeight.w500, letterSpacing: -1.2, color: AppColors.text),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Text('${records.length} records', style: const TextStyle(fontSize: 12, color: AppColors.accent200)),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 22),
+              const SectionLabel('Expense History'),
+              const SizedBox(height: 4),
+              if (records.isEmpty)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(32.0),
+                    child: Text('No expenses recorded yet', style: TextStyle(color: AppColors.textMuted)),
+                  ),
+                )
+              else
+                ...records.asMap().entries.map((entry) {
+                  final record = entry.value;
+                  return Rise(
+                    delayMs: math.min(entry.key, 8) * 40,
+                    durationMs: 400,
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () => showRecordDetailsModal(context, record),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Row(
+                              children: [
+                                IconTile(icon: typeIcon(record.maintenanceType), background: AppColors.surface, edge: AppColors.neutral800),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(typeLabel(record.maintenanceType), style: const TextStyle(fontSize: 14, color: AppColors.text)),
+                                      Text(DateFormat('MMM dd, yyyy').format(DateTime.parse(record.date).toLocal()), style: AmText.sub),
+                                    ],
+                                  ),
+                                ),
+                                Text(
+                                  'EGP ${numberFormat.format(record.cost)}',
+                                  style: const TextStyle(fontSize: 14, color: AppColors.text, fontFeatures: tabular),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const FadingRule(),
                         ],
                       ),
                     ),
-                    Text('EGP ${numberFormat.format(record.cost)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF0F172A))),
-                  ],
-                ),
-                ),
-              )),
-          ],
-        ),
-      );
-    });
+                  );
+                }),
+            ],
+          ),
+        );
+      },
+    );
   }
 }
 
@@ -1135,87 +947,66 @@ class _RemindersTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<CarProvider>(builder: (context, provider, child) {
-      final reminders = provider.getReminders(carId);
+    return Consumer<CarProvider>(
+      builder: (context, provider, child) {
+        final car = provider.getCar(carId);
+        final reminders = sortedReminders(provider.getReminders(carId), car);
+        final counts = {for (final s in MStatus.values) s: reminders.where((r) => r.status == s).length};
 
-      return SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Maintenance Reminders', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            if (reminders.isEmpty)
-              const Center(child: Padding(
-                padding: EdgeInsets.all(32.0),
-                child: Text('No active reminders', style: TextStyle(color: Color(0xFF515F74))),
-              ))
-            else
-              ...reminders.map((reminder) {
-                Color statusColor;
-                IconData statusIcon;
-                switch (reminder.status) {
-                  case 'OVERDUE':
-                    statusColor = Colors.red;
-                    statusIcon = Icons.error_outline;
-                    break;
-                  case 'DUE':
-                    statusColor = Colors.orange;
-                    statusIcon = Icons.warning_amber_rounded;
-                    break;
-                  case 'UPCOMING':
-                    statusColor = Colors.blue;
-                    statusIcon = Icons.info_outline;
-                    break;
-                  default:
-                    statusColor = Colors.green;
-                    statusIcon = Icons.check_circle_outline;
-                }
-
-                final numberFormat = NumberFormat('#,##0');
-                final dueText = reminder.dueMileage != null ? '${numberFormat.format(reminder.dueMileage)} km' : (reminder.dueDate ?? 'N/A');
-
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: statusColor.withOpacity(0.3)),
-                    boxShadow: [
-                      BoxShadow(color: statusColor.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2)),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(color: statusColor.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
-                        child: Icon(statusIcon, color: statusColor),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(reminder.maintenanceType.replaceAll('_', ' '), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                            const SizedBox(height: 4),
-                            Text('Due at: $dueText', style: const TextStyle(color: Color(0xFF515F74), fontSize: 14)),
-                          ],
+        return SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20, 14, 20, 100),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Rise(
+                child: Row(
+                  children: MStatus.values.map((s) {
+                    return Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(left: s == MStatus.overdue ? 0 : 8),
+                        child: AmCard(
+                          radius: 12,
+                          padding: const EdgeInsets.fromLTRB(10, 10, 10, 8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${counts[s]}',
+                                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500, color: s.color, fontFeatures: tabular),
+                              ),
+                              Text(s.label, style: const TextStyle(fontSize: 11, color: AppColors.textMuted)),
+                            ],
+                          ),
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(color: statusColor.withOpacity(0.1), borderRadius: BorderRadius.circular(4)),
-                        child: Text(reminder.status, style: TextStyle(color: statusColor, fontSize: 10, fontWeight: FontWeight.bold)),
-                      ),
-                    ],
+                    );
+                  }).toList(),
+                ),
+              ),
+              const SizedBox(height: 18),
+              const SectionLabel('Maintenance Reminders'),
+              const SizedBox(height: 10),
+              if (reminders.isEmpty)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(32.0),
+                    child: Text('No active reminders', style: TextStyle(color: AppColors.textMuted)),
                   ),
-                );
-              }),
-          ],
-        ),
-      );
-    });
+                )
+              else
+                ...reminders.asMap().entries.map((entry) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Rise(
+                      delayMs: math.min(entry.key, 6) * 50,
+                      child: _ReminderCard(view: entry.value),
+                    ),
+                  );
+                }),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

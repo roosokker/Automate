@@ -5,6 +5,7 @@ import '../models/service_center.dart';
 import 'profile_screen.dart';
 import 'notifications_screen.dart';
 import '../widgets/notification_bell.dart';
+import '../theme/app_colors.dart';
 
 class AddServiceScreen extends StatelessWidget {
   const AddServiceScreen({super.key});
@@ -12,9 +13,9 @@ class AddServiceScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FF),
+      backgroundColor: AppColors.bg,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF8F9FF),
+        backgroundColor: AppColors.bg,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -26,13 +27,13 @@ class AddServiceScreen extends StatelessWidget {
               'AutoMate',
               style: TextStyle(
                 fontSize: 18,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ],
         ),
         actions: [
-          const NotificationBell(color: Colors.white),
+          const NotificationBell(color: AppColors.text),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: GestureDetector(
@@ -60,13 +61,13 @@ class AddServiceScreen extends StatelessWidget {
                 'Log Maintenance',
                 style: TextStyle(
                   fontSize: 24,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(height: 4),
               const Text(
                 'Keep your vehicle\'s health records up to date for better resale value and performance.',
-                style: TextStyle(fontSize: 14, color: Color(0xFF515F74)),
+                style: TextStyle(fontSize: 14, color: AppColors.textMuted),
               ),
               const SizedBox(height: 24),
 
@@ -76,7 +77,7 @@ class AddServiceScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Service Type', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF45464D))),
+                    const Text('Service Type', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<String>(
                       decoration: const InputDecoration(hintText: 'Oil Change'),
@@ -90,7 +91,7 @@ class AddServiceScreen extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('Date', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF45464D))),
+                              const Text('Date', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
                               const SizedBox(height: 8),
                               TextFormField(),
                             ],
@@ -101,7 +102,7 @@ class AddServiceScreen extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('Mileage', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF45464D))),
+                              const Text('Mileage', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
                               const SizedBox(height: 8),
                               TextFormField(
                                 decoration: const InputDecoration(
@@ -116,7 +117,7 @@ class AddServiceScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    const Text('Workshop / Service Center', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF45464D))),
+                    const Text('Workshop / Service Center', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
                     const SizedBox(height: 8),
                     TextFormField(
                       decoration: const InputDecoration(
@@ -145,7 +146,7 @@ class AddServiceScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Notes', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF45464D))),
+                    const Text('Notes', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
                     const SizedBox(height: 8),
                     TextFormField(
                       maxLines: 3,
@@ -165,7 +166,7 @@ class AddServiceScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Renewed Spare Part', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF45464D))),
+                    const Text('Renewed Spare Part', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<String>(
                       decoration: const InputDecoration(hintText: 'Select a part...'),
@@ -175,8 +176,8 @@ class AddServiceScreen extends StatelessWidget {
                     const SizedBox(height: 12),
                     TextButton.icon(
                       onPressed: () {},
-                      icon: const Icon(Icons.add_circle_outline, color: Color(0xFF515F74)),
-                      label: const Text('Add Another Part', style: TextStyle(color: Color(0xFF515F74))),
+                      icon: const Icon(Icons.add_circle_outline, color: AppColors.textMuted),
+                      label: const Text('Add Another Part', style: TextStyle(color: AppColors.textMuted)),
                     ),
                   ],
                 ),
@@ -190,10 +191,10 @@ class AddServiceScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Total Amount', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF45464D))),
+                    const Text('Total Amount', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
                     const SizedBox(height: 8),
                     TextFormField(
-                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
                       decoration: const InputDecoration(
                         hintText: '0.00',
                         suffixIcon: SizedBox(
@@ -201,9 +202,9 @@ class AddServiceScreen extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Icon(Icons.unfold_more, size: 16, color: Color(0xFFC6C6CD)),
+                              Icon(Icons.unfold_more, size: 16, color: AppColors.textFaint),
                               SizedBox(width: 8),
-                              Text('EGP', style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text('EGP', style: TextStyle(fontWeight: FontWeight.w600)),
                               SizedBox(width: 16),
                             ],
                           ),
@@ -211,7 +212,7 @@ class AddServiceScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text('Includes VAT and labor fees.', style: TextStyle(fontSize: 10, fontStyle: FontStyle.italic, color: Color(0xFF7C839B))),
+                    const Text('Includes VAT and labor fees.', style: TextStyle(fontSize: 10, fontStyle: FontStyle.italic, color: AppColors.textFaint)),
                   ],
                 ),
               ),
@@ -225,24 +226,24 @@ class AddServiceScreen extends StatelessWidget {
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 32),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(color: const Color(0xFFC6C6CD), style: BorderStyle.solid), // Dashed borders need custom painters, using solid for now
-                    borderRadius: BorderRadius.circular(8),
+                    color: AppColors.surface,
+                    border: Border.all(color: AppColors.lineStrong, style: BorderStyle.solid), // Dashed borders need custom painters, using solid for now
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
                     children: [
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFDCE9FF),
-                          borderRadius: BorderRadius.circular(8),
+                          color: AppColors.accentTint,
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Icon(Icons.cloud_upload_outlined, color: Color(0xFF0F172A)),
+                        child: const Icon(Icons.cloud_upload_outlined, color: AppColors.text),
                       ),
                       const SizedBox(height: 16),
-                      const Text('Upload Document', style: TextStyle(fontWeight: FontWeight.bold)),
+                      const Text('Upload Document', style: TextStyle(fontWeight: FontWeight.w600)),
                       const SizedBox(height: 4),
-                      const Text('PDF, JPG, or PNG (Max 5MB)', style: TextStyle(fontSize: 12, color: Color(0xFF515F74))),
+                      const Text('PDF, JPG, or PNG (Max 5MB)', style: TextStyle(fontSize: 12, color: AppColors.textMuted)),
                     ],
                   ),
                 ),
@@ -278,10 +279,10 @@ class AddServiceScreen extends StatelessWidget {
             Row(
               children: [
                 if (icon != null) ...[
-                  Icon(icon, size: 20, color: const Color(0xFF0F172A)),
+                  Icon(icon, size: 20, color: AppColors.text),
                   const SizedBox(width: 8),
                 ],
-                Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               ],
             ),
             const SizedBox(height: 16),
@@ -297,12 +298,12 @@ class AddServiceScreen extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFFE5EEFF),
-        borderRadius: BorderRadius.circular(4),
+        color: AppColors.surfaceHigh,
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
         label,
-        style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF515F74)),
+        style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.textMuted),
       ),
     );
   }

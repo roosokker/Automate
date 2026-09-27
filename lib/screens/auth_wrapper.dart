@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import 'welcome_screen.dart';
 import 'main_scaffold.dart';
+import '../widgets/ui.dart';
 
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
@@ -33,11 +34,17 @@ class _AuthWrapperState extends State<AuthWrapper> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return Scaffold(
-        backgroundColor: const Color(0xFFF8F9FF),
-        body: Center(
-          child: CircularProgressIndicator(
-            color: Theme.of(context).primaryColor,
+      return const Scaffold(
+        body: AmBackground(
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                BrandMark(size: 34),
+                SizedBox(height: 24),
+                AmSpinner(size: 22),
+              ],
+            ),
           ),
         ),
       );

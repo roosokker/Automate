@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'notifications_screen.dart';
-import '../widgets/notification_bell.dart';
+import '../theme/phosphor_icons.dart';
 import '../services/auth_service.dart';
 import 'placeholder_screen.dart';
+import '../theme/app_colors.dart';
+import '../widgets/ui.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -10,226 +11,192 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FF),
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: const Color(0xFFF8F9FF),
-        elevation: 0,
-        title: Text(
-          'AutoMate',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).primaryColor,
-          ),
-        ),
-        actions: [
-          const NotificationBell(),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
-            child: CircleAvatar(
-              radius: 14,
-              backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=11'),
-            ),
-          )
-        ],
-      ),
-      body: FutureBuilder<Map<String, dynamic>?>(
-        future: AuthService().fetchProfile(),
-        builder: (context, snapshot) {
-          final user = snapshot.data;
-          final fullName = user?['fullName'] ?? (snapshot.connectionState == ConnectionState.waiting ? 'Loading...' : 'AutoMate Member');
-          final phone = user?['phone'] ?? 'Manage your account';
+      body: AmBackground(
+        child: SafeArea(
+          child: FutureBuilder<Map<String, dynamic>?>(
+            future: AuthService().fetchProfile(),
+            builder: (context, snapshot) {
+              final user = snapshot.data;
+              final fullName = user?['fullName'] ?? (snapshot.connectionState == ConnectionState.waiting ? 'Loading...' : 'AutoMate Member');
+              final phone = user?['phone'] ?? 'Manage your account';
 
-          return SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
-              child: Column(
+              return ListView(
+                padding: const EdgeInsets.fromLTRB(20, 6, 20, 28),
                 children: [
+                  ScreenHeader(title: 'Profile', showBack: Navigator.canPop(context)),
+                  const SizedBox(height: 14),
                   // Profile Header
-                  Center(
-                child: Column(
-                  children: [
-                    Stack(
+                  Rise(
+                    child: Row(
                       children: [
-                        Container(
-                          width: 100,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFE5EEFF),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: const Color(0xFFC6C6CD)),
-                            image: const DecorationImage(
-                              image: NetworkImage('https://i.pravatar.cc/150?img=11'),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          bottom: -4,
-                          right: -4,
-                          child: Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 2),
-                            ),
-                            child: Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: const BoxDecoration(
-                                color: Colors.black,
-                                shape: BoxShape.circle,
+                        InitialsAvatar(initials: initialsOf(user?['fullName'] ?? ''), size: 64, ring: 1.5, glow: true),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(fullName, style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w500, color: AppColors.text)),
+                              const SizedBox(height: 2),
+                              Row(
+                                children: [
+                                  const Icon(PhosphorIconsFill.sealCheck, size: 15, color: AppColors.accent),
+                                  const SizedBox(width: 6),
+                                  Flexible(child: Text(phone, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13, color: AppColors.textMuted))),
+                                ],
                               ),
-                              child: const Icon(Icons.settings, color: Colors.white, size: 14),
-                            ),
+                            ],
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
-                    Text(
-                      fullName,
-                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                  ),
+                  const SizedBox(height: 22),
+
+                  _buildSection(
+                    context,
+                    delay: 50,
+                    title: 'Account Settings',
+                    items: [
+                      (PhosphorIconsRegular.user, 'Personal Info', phone),
+                      (PhosphorIconsRegular.shieldCheck, 'Security', 'Password and authentication'),
+                    ],
+                  ),
+                  _buildSection(
+                    context,
+                    delay: 100,
+                    title: 'Vehicle Management',
+                    items: [
+                      (PhosphorIconsRegular.garage, 'My Fleet', 'Manage registered vehicles'),
+                      (PhosphorIconsRegular.fileText, 'Documents', 'Licenses and insurance logs'),
+                    ],
+                    extra: const _StaticRow(icon: PhosphorIconsRegular.ruler, title: 'Units', value: 'Kilometers · EGP'),
+                  ),
+                  _buildSection(
+                    context,
+                    delay: 150,
+                    title: 'Notifications',
+                    items: [
+                      (PhosphorIconsRegular.bellRinging, 'Reminders', 'Maintenance and oil changes'),
+                      (PhosphorIconsRegular.megaphone, 'Alerts', 'Critical system updates'),
+                    ],
+                  ),
+                  _buildSection(
+                    context,
+                    delay: 200,
+                    title: 'Support',
+                    items: [
+                      (PhosphorIconsRegular.question, 'Help Center', 'FAQs and guides'),
+                      (PhosphorIconsRegular.envelopeSimple, 'Contact Us', 'Get professional assistance'),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+
+                  // Log Out Button
+                  Rise(
+                    delayMs: 250,
+                    child: AmButton(
+                      kind: AmButtonKind.danger,
+                      label: 'Log Out',
+                      icon: PhosphorIconsRegular.signOut,
+                      height: 48,
+                      fontSize: 14,
+                      onPressed: () async {
+                        await AuthService().logout();
+                        if (!context.mounted) return;
+                        // Navigate back to Login Screen, clearing history
+                        Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+                      },
                     ),
-                    const SizedBox(height: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFDCE9FF), // Light blue pill
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.workspace_premium_outlined, size: 14, color: Color(0xFF515F74)),
-                          const SizedBox(width: 4),
-                          Text('Premium Member', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A).withValues(alpha: 0.8))),
-                        ],
-                      ),
-                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSection(BuildContext context, {required String title, required List<(IconData, String, String)> items, required int delay, Widget? extra}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 18),
+      child: Rise(
+        delayMs: delay,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SectionLabel(title),
+            const SizedBox(height: 8),
+            AmCard(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+              child: Column(
+                children: [
+                  for (var i = 0; i < items.length; i++) ...[
+                    if (i > 0) const FadingRule(),
+                    _buildListItem(context: context, icon: items[i].$1, title: items[i].$2, subtitle: items[i].$3),
                   ],
-                ),
-              ),
-              const SizedBox(height: 32),
-
-              _buildSection(
-                title: 'ACCOUNT SETTINGS',
-                items: [
-                  _buildListItem(context: context, icon: Icons.person_outline, title: 'Personal Info', subtitle: phone),
-                  _buildListItem(context: context, icon: Icons.security_outlined, title: 'Security', subtitle: 'Password and authentication', showDivider: false),
+                  if (extra != null) ...[const FadingRule(), extra],
                 ],
               ),
-              const SizedBox(height: 24),
-
-              _buildSection(
-                title: 'VEHICLE MANAGEMENT',
-                items: [
-                  _buildListItem(context: context, icon: Icons.directions_car_outlined, title: 'My Fleet', subtitle: 'Manage registered vehicles'),
-                  _buildListItem(context: context, icon: Icons.description_outlined, title: 'Documents', subtitle: 'Licenses and insurance logs', showDivider: false),
-                ],
-              ),
-              const SizedBox(height: 24),
-
-              _buildSection(
-                title: 'NOTIFICATIONS',
-                items: [
-                  _buildListItem(context: context, icon: Icons.notifications_active_outlined, title: 'Reminders', subtitle: 'Maintenance and oil changes'),
-                  _buildListItem(context: context, icon: Icons.campaign_outlined, title: 'Alerts', subtitle: 'Critical system updates', showDivider: false),
-                ],
-              ),
-              const SizedBox(height: 24),
-
-              _buildSection(
-                title: 'SUPPORT',
-                items: [
-                  _buildListItem(context: context, icon: Icons.help_outline, title: 'Help Center', subtitle: 'FAQs and guides'),
-                  _buildListItem(context: context, icon: Icons.email_outlined, title: 'Contact Us', subtitle: 'Get professional assistance', showDivider: false),
-                ],
-              ),
-              const SizedBox(height: 32),
-
-              // Log Out Button
-              OutlinedButton.icon(
-                onPressed: () async {
-                  await AuthService().logout();
-                  if (!context.mounted) return;
-                  // Navigate back to Login Screen, clearing history
-                  Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
-                },
-                icon: const Icon(Icons.logout, color: Color(0xFFD32F2F)),
-                label: const Text(
-                  'Log Out',
-                  style: TextStyle(color: Color(0xFFD32F2F), fontWeight: FontWeight.bold),
-                ),
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Color(0xFFFFCDD2)),
-                  backgroundColor: const Color(0xFFFFF5F5),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  minimumSize: const Size(double.infinity, 50),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                ),
-              ),
-              const SizedBox(height: 32),
-            ],
-          ),
-        ),
-      );
-      }),
-    );
-  }
-
-  Widget _buildSection({required String title, required List<Widget> items}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1, color: Color(0xFF7C839B)),
-        ),
-        const SizedBox(height: 8),
-        Card(
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-            side: const BorderSide(color: Color(0xFFE5EEFF), width: 1),
-          ),
-          child: Column(
-            children: items,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildListItem({required BuildContext context, required IconData icon, required String title, required String subtitle, bool showDivider = true}) {
-    return Column(
-      children: [
-        ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          leading: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: const Color(0xFFE5EEFF),
-              borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: const Color(0xFF0F172A), size: 24),
-          ),
-          title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF0F172A))),
-          subtitle: Text(subtitle, style: const TextStyle(fontSize: 12, color: Color(0xFF515F74))),
-          trailing: const Icon(Icons.chevron_right, color: Color(0xFF515F74)),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => PlaceholderScreen(title: title),
-              ),
-            );
-          },
+          ],
         ),
-        if (showDivider)
-          const Divider(height: 1, color: Color(0xFFE5EEFF), indent: 16, endIndent: 16),
-      ],
+      ),
+    );
+  }
+
+  Widget _buildListItem({required BuildContext context, required IconData icon, required String title, required String subtitle}) {
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PlaceholderScreen(title: title),
+          ),
+        );
+      },
+      child: SizedBox(
+        height: 58,
+        child: Row(
+          children: [
+            Icon(icon, size: 19, color: AppColors.textMuted),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: const TextStyle(fontSize: 14, color: AppColors.text)),
+                  Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
+                ],
+              ),
+            ),
+            const Icon(PhosphorIconsRegular.caretRight, size: 15, color: AppColors.textFaint),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _StaticRow extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String value;
+  const _StaticRow({required this.icon, required this.title, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 50,
+      child: Row(
+        children: [
+          Icon(icon, size: 19, color: AppColors.textMuted),
+          const SizedBox(width: 12),
+          Expanded(child: Text(title, style: const TextStyle(fontSize: 14, color: AppColors.text))),
+          Text(value, style: const TextStyle(fontSize: 13, color: AppColors.textMuted)),
+        ],
+      ),
     );
   }
 }
