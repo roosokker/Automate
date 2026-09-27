@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import '../theme/phosphor_icons.dart';
 import 'package:provider/provider.dart';
 import '../providers/car_provider.dart';
 import '../theme/app_colors.dart';
+import '../widgets/maintenance_ui.dart';
+import '../widgets/ui.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
@@ -9,143 +12,146 @@ class NotificationsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
-      appBar: AppBar(
-        backgroundColor: AppColors.bg,
-        elevation: 0,
-        title: const Text('Notifications', style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600)),
-        iconTheme: const IconThemeData(color: AppColors.text),
-      ),
-      body: Consumer<CarProvider>(
-        builder: (context, provider, child) {
-          final List<Widget> notifications = [];
+      body: AmBackground(
+        child: SafeArea(
+          child: Consumer<CarProvider>(
+            builder: (context, provider, child) {
+              final overdue = <_Notif>[];
+              final due = <_Notif>[];
 
-          for (var car in provider.cars) {
-            final summary = provider.getSummary(car.id);
-            if (summary == null) continue;
+              for (var car in provider.cars) {
+                final summary = provider.getSummary(car.id);
+                if (summary == null) continue;
 
-            for (var item in summary.overdue) {
-              if (item is Map) {
-                final type = (item['maintenanceType'] ?? 'Service').toString().replaceAll('_', ' ');
-                notifications.add(
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: _buildNotificationItem(
-                      icon: Icons.error_outline,
-                      iconColor: AppColors.danger,
+                for (var item in summary.overdue) {
+                  if (item is Map) {
+                    final raw = (item['maintenanceType'] ?? 'Service').toString();
+                    final type = raw.replaceAll('_', ' ');
+                    overdue.add(_Notif(
+                      icon: typeIcon(raw),
+                      status: MStatus.overdue,
                       title: 'Overdue: $type',
                       message: 'Your ${car.make} ${car.model} is overdue for $type.',
                       time: 'Action Required',
-                      isUnread: true,
-                    ),
-                  ),
-                );
-              }
-            }
+                    ));
+                  }
+                }
 
-            for (var item in summary.due) {
-              if (item is Map) {
-                final type = (item['maintenanceType'] ?? 'Service').toString().replaceAll('_', ' ');
-                notifications.add(
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: _buildNotificationItem(
-                      icon: Icons.warning_amber_rounded,
-                      iconColor: AppColors.warn,
+                for (var item in summary.due) {
+                  if (item is Map) {
+                    final raw = (item['maintenanceType'] ?? 'Service').toString();
+                    final type = raw.replaceAll('_', ' ');
+                    due.add(_Notif(
+                      icon: typeIcon(raw),
+                      status: MStatus.due,
                       title: 'Maintenance Due: $type',
                       message: 'Your ${car.make} ${car.model} is due for $type.',
                       time: 'Soon',
-                      isUnread: true,
-                    ),
-                  ),
-                );
+                    ));
+                  }
+                }
               }
-            }
-          }
 
-          if (notifications.isEmpty) {
-            return const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+              final groups = [
+                if (overdue.isNotEmpty) ('Action required', overdue),
+                if (due.isNotEmpty) ('Coming up', due),
+              ];
+              var index = 0;
+
+              return ListView(
+                padding: const EdgeInsets.fromLTRB(20, 6, 20, 28),
                 children: [
-                  Icon(Icons.notifications_none, size: 64, color: AppColors.neutral600),
-                  SizedBox(height: 16),
-                  Text(
-                    'No new notifications',
-                    style: TextStyle(color: AppColors.textFaint, fontSize: 16),
-                  ),
+                  const ScreenHeader(title: 'Notifications', showBack: true),
+                  const SizedBox(height: 12),
+                  if (groups.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 100),
+                      child: Rise(
+                        child: Column(
+                          children: [
+                            const IconTile(icon: PhosphorIconsRegular.bellSimple, size: 64, radius: 20, color: AppColors.textFaint, background: AppColors.surface, edge: AppColors.neutral800),
+                            const SizedBox(height: 16),
+                            const Text('No new notifications', style: TextStyle(color: AppColors.text, fontSize: 16)),
+                            const SizedBox(height: 4),
+                            Text("We'll let you know when something needs attention.", textAlign: TextAlign.center, style: AmText.sub),
+                          ],
+                        ),
+                      ),
+                    )
+                  else
+                    for (final g in groups) ...[
+                      Padding(padding: const EdgeInsets.only(top: 8, bottom: 12), child: SectionLabel(g.$1)),
+                      for (final n in g.$2)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Rise(delayMs: (index++).clamp(0, 8) * 50, child: _buildNotificationItem(n)),
+                        ),
+                    ],
                 ],
-              ),
-            );
-          }
-
-          return ListView(
-            padding: const EdgeInsets.all(16),
-            children: notifications,
-          );
-        },
+              );
+            },
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildNotificationItem({
-    required IconData icon,
-    required Color iconColor,
-    required String title,
-    required String message,
-    required String time,
-    required bool isUnread,
-  }) {
+  Widget _buildNotificationItem(_Notif n) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: isUnread ? AppColors.surfaceHigh : AppColors.surface,
+        color: AppColors.surfaceHigh,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: isUnread ? AppColors.line : AppColors.line),
+        border: Border.all(color: AppColors.neutral800),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
+        clipBehavior: Clip.none,
         children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: iconColor.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: iconColor, size: 24),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              IconTile(icon: n.icon, color: n.status.color, background: n.status.tint, edge: n.status.edge),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: AppColors.text)),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(child: Text(n.title, style: const TextStyle(fontSize: 14.5, color: AppColors.text))),
+                        const SizedBox(width: 8),
+                        Text(n.time, style: const TextStyle(fontSize: 11, color: AppColors.textFaint)),
+                      ],
                     ),
-                    const SizedBox(width: 8),
-                    Text(time, style: const TextStyle(fontSize: 12, color: AppColors.textFaint)),
+                    const SizedBox(height: 2),
+                    Text(n.message, style: const TextStyle(fontSize: 12.5, height: 1.4, color: AppColors.textMuted)),
                   ],
                 ),
-                const SizedBox(height: 4),
-                Text(message, style: const TextStyle(fontSize: 14, color: AppColors.textSecondary)),
-              ],
+              ),
+            ],
+          ),
+          // Unread dot
+          PositionedDirectional(
+            top: 4,
+            start: -8,
+            child: Container(
+              width: 6,
+              height: 6,
+              decoration: BoxDecoration(color: AppColors.accent, shape: BoxShape.circle, boxShadow: AppColors.glow(0.9, 6)),
             ),
           ),
-          if (isUnread) ...[
-            const SizedBox(width: 12),
-            Container(
-              width: 8,
-              height: 8,
-              margin: const EdgeInsets.only(top: 6),
-              decoration: const BoxDecoration(color: AppColors.accent, shape: BoxShape.circle),
-            ),
-          ],
         ],
       ),
     );
   }
+}
+
+class _Notif {
+  final IconData icon;
+  final MStatus status;
+  final String title;
+  final String message;
+  final String time;
+  _Notif({required this.icon, required this.status, required this.title, required this.message, required this.time});
 }

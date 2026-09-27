@@ -34,8 +34,13 @@ class AppColors {
   static const Color accentDeep = Color(0xFF423A6A); // accent-800
   static const Color accentTint = Color(0xFF2B2741); // accent-900
 
+  static const Color accent500 = Color(0xFF968AE0);
+  static const Color sectionGhost = Color(0xFF4C5397);
+
   // Neutral ramp (extra steps)
+  static const Color neutral100 = Color(0xFFF3F5FE);
   static const Color neutral200 = Color(0xFFE4E7F5);
+  static const Color neutral700 = Color(0xFF595D6C);
   static const Color neutral600 = Color(0xFF75798C);
   static const Color neutral800 = Color(0xFF3F424D);
   static const Color neutral900 = Color(0xFF292B31);

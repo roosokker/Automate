@@ -1,63 +1,59 @@
 import 'package:flutter/material.dart';
+import '../theme/phosphor_icons.dart';
 import '../theme/app_colors.dart';
+import '../widgets/ui.dart';
 
 class PlaceholderScreen extends StatelessWidget {
   final String title;
-  
+
   const PlaceholderScreen({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
-      appBar: AppBar(
-        backgroundColor: AppColors.bg,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.text),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: AppColors.text,
-          ),
-        ),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.construction_outlined, size: 80, color: AppColors.textMuted),
-            const SizedBox(height: 24),
-            Text(
-              '$title Coming Soon',
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w600,
-                color: AppColors.text,
-              ),
-            ),
-            const SizedBox(height: 16),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 32.0),
-              child: Text(
-                'We are working hard to bring you this feature in the next update. Stay tuned!',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: AppColors.textMuted,
+      body: AmBackground(
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 6, 20, 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ScreenHeader(title: title, showBack: true),
+                const Spacer(),
+                Rise(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 72,
+                        height: 72,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(22),
+                          gradient: const LinearGradient(begin: Alignment(-0.5, -1), end: Alignment(0.5, 1), colors: [AppColors.accentDeep, AppColors.neutral900]),
+                          border: Border.all(color: AppColors.accent700),
+                          boxShadow: [BoxShadow(color: AppColors.accent.withValues(alpha: 0.3), blurRadius: 36)],
+                        ),
+                        child: const Icon(PhosphorIconsRegular.wrench, size: 34, color: AppColors.accent200),
+                      ),
+                      const SizedBox(height: 24),
+                      Text('$title Coming Soon', style: AmText.h2),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'We are working hard to bring you this feature in the next update. Stay tuned!',
+                        style: TextStyle(fontSize: 15, height: 1.5, color: AppColors.textMuted),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+                const Spacer(),
+                AmButton(
+                  label: 'Go Back',
+                  icon: PhosphorIconsRegular.arrowLeft,
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
             ),
-            const SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Go Back'),
-            ),
-          ],
+          ),
         ),
       ),
     );
