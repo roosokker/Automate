@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../providers/car_provider.dart';
+import '../theme/app_colors.dart';
 
 class AddRecordScreen extends StatefulWidget {
   const AddRecordScreen({super.key});
@@ -112,7 +113,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
     if (success) {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Maintenance record added!'), backgroundColor: Colors.green),
+        const SnackBar(content: Text('Maintenance record added!'), backgroundColor: AppColors.accentDeep),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -124,15 +125,15 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FF),
+      backgroundColor: AppColors.bg,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.bg,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A)),
+          icon: const Icon(Icons.arrow_back, color: AppColors.text),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Add Record', style: TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.bold)),
+        title: const Text('Add Record', style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600)),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -144,7 +145,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
               // Type
               DropdownButtonFormField<String>(
                 value: _selectedType,
-                decoration: const InputDecoration(labelText: 'Maintenance Type', border: OutlineInputBorder(), filled: true, fillColor: Colors.white),
+                decoration: const InputDecoration(labelText: 'Maintenance Type', border: OutlineInputBorder(), filled: true, fillColor: AppColors.surface),
                 items: _maintenanceTypes.map((type) => DropdownMenuItem(value: type, child: Text(type.replaceAll('_', ' ')))).toList(),
                 onChanged: (val) => setState(() => _selectedType = val),
                 validator: (value) => value == null ? 'Required' : null,
@@ -154,7 +155,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
               // Quality
               DropdownButtonFormField<String>(
                 value: _selectedQuality,
-                decoration: const InputDecoration(labelText: 'Part Quality (Optional)', border: OutlineInputBorder(), filled: true, fillColor: Colors.white),
+                decoration: const InputDecoration(labelText: 'Part Quality (Optional)', border: OutlineInputBorder(), filled: true, fillColor: AppColors.surface),
                 items: _partQualities.map((q) => DropdownMenuItem(value: q, child: Text(q))).toList(),
                 onChanged: (val) => setState(() => _selectedQuality = val),
               ),
@@ -164,7 +165,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
               InkWell(
                 onTap: () => _selectDate(context),
                 child: InputDecorator(
-                  decoration: const InputDecoration(labelText: 'Service Date', border: OutlineInputBorder(), filled: true, fillColor: Colors.white),
+                  decoration: const InputDecoration(labelText: 'Service Date', border: OutlineInputBorder(), filled: true, fillColor: AppColors.surface),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -194,7 +195,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                     labelText: 'Part Production Date' + ((_selectedType == 'BATTERY' || _selectedType == 'TIRE_REPLACEMENT') ? ' (Required)' : ' (Optional)'),
                     border: const OutlineInputBorder(),
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: AppColors.surface,
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -211,7 +212,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
               TextFormField(
                 controller: _mileageController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Service Mileage (km)', border: OutlineInputBorder(), filled: true, fillColor: Colors.white),
+                decoration: const InputDecoration(labelText: 'Service Mileage (km)', border: OutlineInputBorder(), filled: true, fillColor: AppColors.surface),
                 validator: (value) {
                   if (value == null || value.isEmpty) return 'Required';
                   final mileage = int.tryParse(value);
@@ -225,7 +226,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
               TextFormField(
                 controller: _costController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: const InputDecoration(labelText: 'Cost (EGP)', border: OutlineInputBorder(), filled: true, fillColor: Colors.white),
+                decoration: const InputDecoration(labelText: 'Cost (EGP)', border: OutlineInputBorder(), filled: true, fillColor: AppColors.surface),
                 validator: (value) {
                   if (value == null || value.isEmpty) return 'Required';
                   final cost = double.tryParse(value);
@@ -244,7 +245,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                   hintText: 'e.g. 10000',
                   border: OutlineInputBorder(),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: AppColors.surface,
                 ),
               ),
               const SizedBox(height: 16),
@@ -252,7 +253,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
               // Center Name
               TextFormField(
                 controller: _centerNameController,
-                decoration: const InputDecoration(labelText: 'Service Center Name', border: OutlineInputBorder(), filled: true, fillColor: Colors.white),
+                decoration: const InputDecoration(labelText: 'Service Center Name', border: OutlineInputBorder(), filled: true, fillColor: AppColors.surface),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) return 'Required';
                   if (value.trim().length < 3) return 'Name must be at least 3 characters';
@@ -266,7 +267,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
               TextFormField(
                 controller: _notesController,
                 maxLines: 3,
-                decoration: const InputDecoration(labelText: 'Notes', border: OutlineInputBorder(), filled: true, fillColor: Colors.white),
+                decoration: const InputDecoration(labelText: 'Notes', border: OutlineInputBorder(), filled: true, fillColor: AppColors.surface),
               ),
               const SizedBox(height: 32),
               
@@ -274,13 +275,13 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
               ElevatedButton(
                 onPressed: _isLoading ? null : _submit,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF0F172A),
+                  backgroundColor: AppColors.accentDeep,
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 child: _isLoading
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                    : const Text('Save Record', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.text, strokeWidth: 2))
+                    : const Text('Save Record', style: TextStyle(color: AppColors.text, fontSize: 16, fontWeight: FontWeight.w600)),
               ),
               const SizedBox(height: 32),
             ],

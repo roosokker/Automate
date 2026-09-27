@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 
 class PlaceholderScreen extends StatelessWidget {
   final String title;
@@ -8,20 +9,20 @@ class PlaceholderScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FF),
+      backgroundColor: AppColors.bg,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.bg,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A)),
+          icon: const Icon(Icons.arrow_back, color: AppColors.text),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           title,
           style: const TextStyle(
             fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF0F172A),
+            fontWeight: FontWeight.w600,
+            color: AppColors.text,
           ),
         ),
       ),
@@ -29,14 +30,14 @@ class PlaceholderScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.construction_outlined, size: 80, color: Color(0xFF515F74)),
+            const Icon(Icons.construction_outlined, size: 80, color: AppColors.textMuted),
             const SizedBox(height: 24),
             Text(
               '$title Coming Soon',
               style: const TextStyle(
                 fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF0F172A),
+                fontWeight: FontWeight.w600,
+                color: AppColors.text,
               ),
             ),
             const SizedBox(height: 16),
@@ -47,7 +48,7 @@ class PlaceholderScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16,
-                  color: Color(0xFF515F74),
+                  color: AppColors.textMuted,
                 ),
               ),
             ),

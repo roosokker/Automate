@@ -5,6 +5,7 @@ import '../models/service_center.dart';
 import 'notifications_screen.dart';
 import 'service_center_details_screen.dart';
 import '../widgets/notification_bell.dart';
+import '../theme/app_colors.dart';
 
 class SpecialistsListScreen extends StatefulWidget {
   const SpecialistsListScreen({super.key});
@@ -42,28 +43,28 @@ class _SpecialistsListScreenState extends State<SpecialistsListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FF),
+      backgroundColor: AppColors.bg,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.bg,
         elevation: 0,
         title: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: const Color(0xFFDCE9FF),
-                borderRadius: BorderRadius.circular(4),
+                color: AppColors.accentTint,
+                borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(Icons.store, color: Color(0xFF0F172A), size: 20),
+              child: const Icon(Icons.store, color: AppColors.text, size: 20),
             ),
             const SizedBox(width: 8),
             const Text(
               'AutoMate',
               style: TextStyle(
                 fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF0F172A),
+                fontWeight: FontWeight.w600,
+                color: AppColors.text,
               ),
             ),
           ],
@@ -74,7 +75,7 @@ class _SpecialistsListScreenState extends State<SpecialistsListScreen> {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(110),
           child: Container(
-            color: Colors.white,
+            color: AppColors.surface,
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Column(
               children: [
@@ -84,13 +85,13 @@ class _SpecialistsListScreenState extends State<SpecialistsListScreen> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(color: const Color(0xFFC6C6CD)),
-                          borderRadius: BorderRadius.circular(4),
+                          color: AppColors.surface,
+                          border: Border.all(color: AppColors.lineStrong),
+                          borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.search, color: Color(0xFF515F74), size: 20),
+                            const Icon(Icons.search, color: AppColors.textMuted, size: 20),
                             const SizedBox(width: 8),
                             Expanded(
                               child: TextField(
@@ -118,9 +119,9 @@ class _SpecialistsListScreenState extends State<SpecialistsListScreen> {
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: Theme.of(context).primaryColor,
-                          borderRadius: BorderRadius.circular(4),
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Icon(Icons.search, color: Colors.white, size: 20),
+                        child: const Icon(Icons.search, color: AppColors.text, size: 20),
                       ),
                     ),
                   ],
@@ -149,13 +150,13 @@ class _SpecialistsListScreenState extends State<SpecialistsListScreen> {
             return const Center(child: CircularProgressIndicator());
           }
           if (provider.error != null) {
-            return Center(child: Text(provider.error!, style: const TextStyle(color: Colors.red)));
+            return Center(child: Text(provider.error!, style: const TextStyle(color: AppColors.danger)));
           }
 
           final centers = provider.serviceCenters;
 
           if (centers.isEmpty) {
-            return const Center(child: Text('No service centers found.', style: TextStyle(color: Color(0xFF515F74))));
+            return const Center(child: Text('No service centers found.', style: TextStyle(color: AppColors.textMuted)));
           }
 
           return SingleChildScrollView(
@@ -167,20 +168,20 @@ class _SpecialistsListScreenState extends State<SpecialistsListScreen> {
                   height: 100,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF213145),
-                    borderRadius: BorderRadius.circular(8),
+                    color: AppColors.surfaceLow,
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Stack(
                     children: [
-                      const Center(child: Icon(Icons.map, size: 48, color: Color(0xFF515F74))),
+                      const Center(child: Icon(Icons.map, size: 48, color: AppColors.textMuted)),
                       Positioned(
                         bottom: 16,
                         left: 16,
                         child: Row(
                           children: [
-                            const Icon(Icons.my_location, color: Colors.white, size: 16),
+                            const Icon(Icons.my_location, color: AppColors.text, size: 16),
                             const SizedBox(width: 8),
-                            Text('${centers.length} Specialists near you', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                            Text('${centers.length} Specialists near you', style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600, fontSize: 16)),
                           ],
                         ),
                       ),
@@ -229,15 +230,15 @@ class _SpecialistsListScreenState extends State<SpecialistsListScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF0F172A) : const Color(0xFFE5EEFF),
+          color: isSelected ? AppColors.accentDeep : AppColors.surfaceHigh,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Text(
           label,
           style: TextStyle(
             fontSize: 12,
-            fontWeight: FontWeight.bold,
-            color: isSelected ? Colors.white : const Color(0xFF515F74),
+            fontWeight: FontWeight.w600,
+            color: isSelected ? AppColors.text : AppColors.textMuted,
           ),
         ),
       ),
@@ -257,10 +258,10 @@ class _SpecialistsListScreenState extends State<SpecialistsListScreen> {
         children: [
           Container(
             height: 140,
-            color: const Color(0xFFC6C6CD),
+            color: AppColors.surfaceHigh,
             child: Stack(
               children: [
-                const Center(child: Icon(Icons.storefront, size: 48, color: Color(0xFF515F74))),
+                const Center(child: Icon(Icons.storefront, size: 48, color: AppColors.textMuted)),
                 if (isVerified)
                   Positioned(
                     top: 12,
@@ -268,12 +269,12 @@ class _SpecialistsListScreenState extends State<SpecialistsListScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF0F172A),
-                        borderRadius: BorderRadius.circular(4),
+                        color: AppColors.accentDeep,
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Text(
                         'VERIFIED SPECIALIST',
-                        style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
+                        style: TextStyle(color: AppColors.text, fontSize: 10, fontWeight: FontWeight.w600, letterSpacing: 1),
                       ),
                     ),
                   ),
@@ -288,12 +289,12 @@ class _SpecialistsListScreenState extends State<SpecialistsListScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(child: Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis)),
+                    Expanded(child: Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500), overflow: TextOverflow.ellipsis)),
                     Row(
                       children: [
-                        const Icon(Icons.star, color: Colors.black, size: 16),
+                        const Icon(Icons.star, color: AppColors.text, size: 16),
                         const SizedBox(width: 4),
-                        Text(rating, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                        Text(rating, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
                       ],
                     ),
                   ],
@@ -304,18 +305,18 @@ class _SpecialistsListScreenState extends State<SpecialistsListScreen> {
                   children: tags.map((tag) => Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE5EEFF),
-                      borderRadius: BorderRadius.circular(4),
+                      color: AppColors.surfaceHigh,
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Text(tag, style: const TextStyle(fontSize: 10, color: Color(0xFF515F74), fontWeight: FontWeight.bold)),
+                    child: Text(tag, style: const TextStyle(fontSize: 10, color: AppColors.textMuted, fontWeight: FontWeight.w600)),
                   )).toList(),
                 ),
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    const Icon(Icons.location_on_outlined, color: Color(0xFF515F74), size: 16),
+                    const Icon(Icons.location_on_outlined, color: AppColors.textMuted, size: 16),
                     const SizedBox(width: 4),
-                    Expanded(child: Text(address, style: const TextStyle(fontSize: 12, color: Color(0xFF515F74)))),
+                    Expanded(child: Text(address, style: const TextStyle(fontSize: 12, color: AppColors.textMuted))),
                   ],
                 ),
                 const SizedBox(height: 16),

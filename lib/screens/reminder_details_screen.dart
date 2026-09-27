@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../models/reminder.dart';
 import '../providers/car_provider.dart';
 import 'package:provider/provider.dart';
+import '../theme/app_colors.dart';
 
 class ReminderDetailsScreen extends StatelessWidget {
   const ReminderDetailsScreen({super.key});
@@ -18,20 +19,20 @@ class ReminderDetailsScreen extends StatelessWidget {
     final isUrgent = reminder.status == 'OVERDUE' || reminder.status == 'DUE';
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FF),
+      backgroundColor: AppColors.bg,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.bg,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A)),
+          icon: const Icon(Icons.arrow_back, color: AppColors.text),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Reminder Details',
           style: TextStyle(
             fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF0F172A),
+            fontWeight: FontWeight.w600,
+            color: AppColors.text,
           ),
         ),
       ),
@@ -44,21 +45,21 @@ class ReminderDetailsScreen extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFE5EEFF)),
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: AppColors.line),
               ),
               child: Column(
                 children: [
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: isUrgent ? const Color(0xFFFFEBEE) : const Color(0xFFE5EEFF),
+                      color: isUrgent ? AppColors.dangerTint : AppColors.surfaceHigh,
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       Icons.build_circle_outlined,
-                      color: isUrgent ? const Color(0xFFD32F2F) : const Color(0xFF515F74),
+                      color: isUrgent ? AppColors.danger : AppColors.textMuted,
                       size: 48,
                     ),
                   ),
@@ -67,22 +68,22 @@ class ReminderDetailsScreen extends StatelessWidget {
                     reminder.maintenanceType.replaceAll('_', ' '),
                     style: const TextStyle(
                       fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF0F172A),
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.text,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: isUrgent ? const Color(0xFFD32F2F) : const Color(0xFF10B981),
+                      color: isUrgent ? AppColors.danger : AppColors.ok,
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Text(
                       reminder.status,
                       style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+                        color: AppColors.text,
+                        fontWeight: FontWeight.w600,
                         fontSize: 12,
                       ),
                     ),
@@ -93,15 +94,15 @@ class ReminderDetailsScreen extends StatelessWidget {
             const SizedBox(height: 24),
             const Text(
               'Details',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColors.text),
             ),
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFE5EEFF)),
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: AppColors.line),
               ),
               child: Column(
                 children: [
@@ -110,14 +111,14 @@ class ReminderDetailsScreen extends StatelessWidget {
                     label: 'Vehicle',
                     value: car != null ? '${car.make} ${car.model}' : 'Unknown',
                   ),
-                  const Divider(height: 24, color: Color(0xFFE5EEFF)),
+                  const Divider(height: 24, color: AppColors.line),
                   if (reminder.dueMileage != null) ...[
                     _buildDetailRow(
                       icon: Icons.speed_outlined,
                       label: 'Due Mileage',
                       value: '${numberFormat.format(reminder.dueMileage)} km',
                     ),
-                    const Divider(height: 24, color: Color(0xFFE5EEFF)),
+                    const Divider(height: 24, color: AppColors.line),
                   ],
                   if (reminder.dueDate != null) ...[
                     _buildDetailRow(
@@ -127,7 +128,7 @@ class ReminderDetailsScreen extends StatelessWidget {
                     ),
                   ],
                   if (reminder.dueMileage == null && reminder.dueDate == null)
-                    const Text('No specific due date or mileage recorded.', style: TextStyle(color: Color(0xFF515F74))),
+                    const Text('No specific due date or mileage recorded.', style: TextStyle(color: AppColors.textMuted)),
                 ],
               ),
             ),
@@ -164,12 +165,12 @@ class ReminderDetailsScreen extends StatelessWidget {
   Widget _buildDetailRow({required IconData icon, required String label, required String value}) {
     return Row(
       children: [
-        Icon(icon, color: const Color(0xFF515F74), size: 20),
+        Icon(icon, color: AppColors.textMuted, size: 20),
         const SizedBox(width: 12),
         Text(
           label,
           style: const TextStyle(
-            color: Color(0xFF515F74),
+            color: AppColors.textMuted,
             fontSize: 14,
           ),
         ),
@@ -177,8 +178,8 @@ class ReminderDetailsScreen extends StatelessWidget {
         Text(
           value,
           style: const TextStyle(
-            color: Color(0xFF0F172A),
-            fontWeight: FontWeight.bold,
+            color: AppColors.text,
+            fontWeight: FontWeight.w600,
             fontSize: 14,
           ),
         ),

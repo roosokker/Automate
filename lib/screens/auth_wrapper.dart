@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import 'welcome_screen.dart';
 import 'main_scaffold.dart';
+import '../theme/app_colors.dart';
 
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
@@ -34,7 +35,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: const Color(0xFFF8F9FF),
+        backgroundColor: AppColors.bg,
         body: Center(
           child: CircularProgressIndicator(
             color: Theme.of(context).primaryColor,

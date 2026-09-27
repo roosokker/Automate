@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'notifications_screen.dart';
 import '../widgets/notification_bell.dart';
 import 'vehicle_details_screen.dart';
+import '../theme/app_colors.dart';
 
 class MyGarageScreen extends StatelessWidget {
   const MyGarageScreen({super.key});
@@ -13,10 +14,10 @@ class MyGarageScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FF),
+      backgroundColor: AppColors.bg,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: const Color(0xFFF8F9FF),
+        backgroundColor: AppColors.bg,
         elevation: 0,
         title: Row(
           children: [
@@ -24,16 +25,16 @@ class MyGarageScreen extends StatelessWidget {
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
                 color: Theme.of(context).primaryColor,
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(Icons.directions_car, color: Colors.white, size: 20),
+              child: const Icon(Icons.directions_car, color: AppColors.text, size: 20),
             ),
             const SizedBox(width: 8),
             Text(
               'AutoMate',
               style: TextStyle(
                 fontSize: 18,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w600,
                 color: Theme.of(context).primaryColor,
               ),
             ),
@@ -53,13 +54,13 @@ class MyGarageScreen extends StatelessWidget {
                 'My Garage',
                 style: TextStyle(
                   fontSize: 24,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(height: 4),
               const Text(
                 'Manage your registered fleet and personal vehicles.',
-                style: TextStyle(fontSize: 14, color: Color(0xFF515F74)),
+                style: TextStyle(fontSize: 14, color: AppColors.textMuted),
               ),
               const SizedBox(height: 24),
               
@@ -73,7 +74,7 @@ class MyGarageScreen extends StatelessWidget {
                     return const Center(
                       child: Padding(
                         padding: EdgeInsets.all(40.0),
-                        child: Text('No vehicles in your garage yet.', style: TextStyle(color: Color(0xFF7C839B))),
+                        child: Text('No vehicles in your garage yet.', style: TextStyle(color: AppColors.textFaint)),
                       ),
                     );
                   }
@@ -111,7 +112,7 @@ class MyGarageScreen extends StatelessWidget {
           Navigator.pushNamed(context, '/add-vehicle');
         },
         backgroundColor: Theme.of(context).primaryColor,
-        child: const Icon(Icons.add, color: Colors.white),
+        child: const Icon(Icons.add, color: AppColors.text),
       ),
     );
   }
@@ -136,26 +137,26 @@ class MyGarageScreen extends StatelessWidget {
           // Image Placeholder Area
           Container(
             height: 160,
-            color: const Color(0xFFC6C6CD), // Gray placeholder
+            color: AppColors.surfaceHigh, // Gray placeholder
             child: Stack(
               children: [
-                const Center(child: Text('img', style: TextStyle(color: Color(0xFF515F74)))),
+                const Center(child: Text('img', style: TextStyle(color: AppColors.textMuted))),
                 Positioned(
                   top: 12,
                   right: 12,
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.9),
-                      borderRadius: BorderRadius.circular(4),
+                      color: AppColors.surface.withValues(alpha: 0.9),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
                       isActive ? 'Active' : 'Service\nDue',
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF0F172A),
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.text,
                       ),
                     ),
                   ),
@@ -177,25 +178,25 @@ class MyGarageScreen extends StatelessWidget {
                       children: [
                         Text(
                           title,
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           subtitle,
-                          style: const TextStyle(fontSize: 14, color: Color(0xFF515F74)),
+                          style: const TextStyle(fontSize: 14, color: AppColors.textMuted),
                         ),
                       ],
                     ),
                     Container(
                       width: 32,
                       height: 32,
-                      color: const Color(0xFFC6C6CD), // Small logo placeholder
+                      color: AppColors.surfaceHigh, // Small logo placeholder
                       child: const Center(child: Text('img', style: TextStyle(fontSize: 8))),
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
-                const Divider(color: Color(0xFFE5EEFF), height: 1),
+                const Divider(color: AppColors.line, height: 1),
                 const SizedBox(height: 16),
                 
                 Row(
@@ -206,7 +207,7 @@ class MyGarageScreen extends StatelessWidget {
                         children: [
                           const Text(
                             'MILEAGE',
-                            style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1, color: Color(0xFF45464D)),
+                            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, letterSpacing: 1, color: AppColors.textSecondary),
                           ),
                           const SizedBox(height: 4),
                           Text(
@@ -222,7 +223,7 @@ class MyGarageScreen extends StatelessWidget {
                         children: [
                           const Text(
                             'PLATE',
-                            style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1, color: Color(0xFF45464D)),
+                            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, letterSpacing: 1, color: AppColors.textSecondary),
                           ),
                           const SizedBox(height: 4),
                           Text(

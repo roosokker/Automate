@@ -11,6 +11,7 @@ import 'add_vehicle_screen.dart';
 import 'my_garage_screen.dart';
 import 'notifications_screen.dart';
 import '../widgets/notification_bell.dart';
+import '../theme/app_colors.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -18,10 +19,10 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FF),
+      backgroundColor: AppColors.bg,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: const Color(0xFFF8F9FF),
+        backgroundColor: AppColors.bg,
         elevation: 0,
         title: Row(
           children: [
@@ -42,7 +43,7 @@ class DashboardScreen extends StatelessWidget {
               'AutoMate',
               style: TextStyle(
                 fontSize: 20,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w600,
                 color: Theme.of(context).primaryColor,
               ),
             ),
@@ -65,8 +66,8 @@ class DashboardScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      const Text('Vehicles', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                      Text('${provider.cars.length} ACTIVE UNITS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF515F74).withValues(alpha: 0.8), letterSpacing: 0.5)),
+                      const Text('Vehicles', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
+                      Text('${provider.cars.length} ACTIVE UNITS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textMuted.withValues(alpha: 0.8), letterSpacing: 0.5)),
                     ],
                   );
                 },
@@ -85,17 +86,17 @@ class DashboardScreen extends StatelessWidget {
                       width: double.infinity,
                       padding: const EdgeInsets.all(24.0),
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFFE5EEFF)),
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: AppColors.line),
                       ),
                       child: Column(
                         children: [
-                          const Icon(Icons.directions_car_outlined, size: 48, color: Color(0xFF515F74)),
+                          const Icon(Icons.directions_car_outlined, size: 48, color: AppColors.textMuted),
                           const SizedBox(height: 16),
-                          const Text('No vehicles added yet', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                          const Text('No vehicles added yet', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.text)),
                           const SizedBox(height: 8),
-                          const Text('Add your first car to start tracking maintenance and expenses.', textAlign: TextAlign.center, style: TextStyle(color: Color(0xFF515F74))),
+                          const Text('Add your first car to start tracking maintenance and expenses.', textAlign: TextAlign.center, style: TextStyle(color: AppColors.textMuted)),
                           const SizedBox(height: 24),
                           ElevatedButton(
                             onPressed: () => Navigator.pushNamed(context, '/add-vehicle'),
@@ -144,9 +145,9 @@ class DashboardScreen extends StatelessWidget {
                     height: 240,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF8F9FF),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFFE5EEFF), width: 1),
+                      color: AppColors.surfaceHigh,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: AppColors.line, width: 1),
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(11), // Inner radius
@@ -177,8 +178,8 @@ class DashboardScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  const Text('Service Centers Near You', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  const Text('View All', style: TextStyle(fontSize: 14, color: Color(0xFF0F172A))),
+                  const Text('Service Centers Near You', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
+                  const Text('View All', style: TextStyle(fontSize: 14, color: AppColors.text)),
                 ],
               ),
               const SizedBox(height: 12),
@@ -194,7 +195,7 @@ class DashboardScreen extends StatelessWidget {
                   if (centers.isEmpty) {
                     return const Padding(
                       padding: EdgeInsets.all(20.0),
-                      child: Text('No service centers found nearby.', style: TextStyle(color: Color(0xFF7C839B))),
+                      child: Text('No service centers found nearby.', style: TextStyle(color: AppColors.textFaint)),
                     );
                   }
 
@@ -222,7 +223,7 @@ class DashboardScreen extends StatelessWidget {
           Navigator.pushNamed(context, '/add-vehicle');
         },
         backgroundColor: Theme.of(context).primaryColor,
-        child: const Icon(Icons.add, color: Colors.white, size: 28),
+        child: const Icon(Icons.add, color: AppColors.text, size: 28),
       ),
     );
   }
@@ -230,7 +231,7 @@ class DashboardScreen extends StatelessWidget {
   void _showSpecialistDetails(BuildContext context, ServiceCenter center) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -247,18 +248,18 @@ class DashboardScreen extends StatelessWidget {
                   Expanded(
                     child: Text(
                       center.name,
-                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: AppColors.text),
                     ),
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE5EEFF),
+                      color: AppColors.surfaceHigh,
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Text(
                       center.type.replaceAll('_', ' '),
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Color(0xFF0F172A)),
+                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12, color: AppColors.text),
                     ),
                   ),
                 ],
@@ -266,12 +267,12 @@ class DashboardScreen extends StatelessWidget {
               const SizedBox(height: 16),
               Row(
                 children: [
-                  const Icon(Icons.location_on_outlined, color: Color(0xFF515F74), size: 20),
+                  const Icon(Icons.location_on_outlined, color: AppColors.textMuted, size: 20),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       '${center.address}, ${center.city}',
-                      style: const TextStyle(color: Color(0xFF515F74), fontSize: 14),
+                      style: const TextStyle(color: AppColors.textMuted, fontSize: 14),
                     ),
                   ),
                 ],
@@ -280,11 +281,11 @@ class DashboardScreen extends StatelessWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    const Icon(Icons.phone_outlined, color: Color(0xFF515F74), size: 20),
+                    const Icon(Icons.phone_outlined, color: AppColors.textMuted, size: 20),
                     const SizedBox(width: 8),
                     Text(
                       center.phone!,
-                      style: const TextStyle(color: Color(0xFF515F74), fontSize: 14),
+                      style: const TextStyle(color: AppColors.textMuted, fontSize: 14),
                     ),
                   ],
                 ),
@@ -313,8 +314,8 @@ class DashboardScreen extends StatelessWidget {
       child: Card(
         elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-        side: const BorderSide(color: Color(0xFFE5EEFF), width: 1),
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(color: AppColors.line, width: 1),
       ),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -324,27 +325,27 @@ class DashboardScreen extends StatelessWidget {
               width: 60,
               height: 40,
               decoration: BoxDecoration(
-                color: const Color(0xFFE5EEFF),
-                borderRadius: BorderRadius.circular(4),
+                color: AppColors.surfaceHigh,
+                borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(Icons.directions_car, color: Color(0xFF515F74)),
+              child: const Icon(Icons.directions_car, color: AppColors.textMuted),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF0F172A))),
+                  Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: AppColors.text)),
                   const SizedBox(height: 2),
-                  Text(subtitle, style: const TextStyle(fontSize: 12, color: Color(0xFF515F74), fontWeight: FontWeight.w600)),
+                  Text(subtitle, style: const TextStyle(fontSize: 12, color: AppColors.textMuted, fontWeight: FontWeight.w600)),
                 ],
               ),
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: isGood ? const Color(0xFFD1F2D9) : const Color(0xFFFFF3CD),
-                borderRadius: BorderRadius.circular(12),
+                color: isGood ? AppColors.okTint : AppColors.warnTint,
+                borderRadius: BorderRadius.circular(14),
               ),
               child: Row(
                 children: [
@@ -353,7 +354,7 @@ class DashboardScreen extends StatelessWidget {
                     height: 6,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: isGood ? const Color(0xFF28A745) : const Color(0xFFFFA000),
+                      color: isGood ? AppColors.ok : AppColors.warn,
                     ),
                   ),
                   const SizedBox(width: 4),
@@ -361,8 +362,8 @@ class DashboardScreen extends StatelessWidget {
                     isGood ? 'GOOD' : 'WARNING',
                     style: TextStyle(
                       fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: isGood ? const Color(0xFF1E7E34) : const Color(0xFFD39E00),
+                      fontWeight: FontWeight.w600,
+                      color: isGood ? AppColors.ok : AppColors.warn,
                       letterSpacing: 0.5,
                     ),
                   ),
@@ -385,8 +386,8 @@ class DashboardScreen extends StatelessWidget {
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-        side: const BorderSide(color: Color(0xFFE5EEFF), width: 1),
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(color: AppColors.line, width: 1),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -396,26 +397,26 @@ class DashboardScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(child: Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Color(0xFF0F172A)), overflow: TextOverflow.ellipsis)),
+                Expanded(child: Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColors.text), overflow: TextOverflow.ellipsis)),
                 const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFDCE9FF), // surface-container-high
-                    borderRadius: BorderRadius.circular(4),
+                    color: AppColors.accentTint, // surface-container-high
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Text('OPEN', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                  child: const Text('OPEN', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.text)),
                 ),
               ],
             ),
             const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(Icons.star_border, size: 14, color: Color(0xFFFFA000)),
+                const Icon(Icons.star_border, size: 14, color: AppColors.warn),
                 const SizedBox(width: 4),
-                Text(rating, style: const TextStyle(fontSize: 14, color: Color(0xFF45464D))),
+                Text(rating, style: const TextStyle(fontSize: 14, color: AppColors.textSecondary)),
                 const SizedBox(width: 4),
-                Text('($reviews) • $distance', style: const TextStyle(fontSize: 14, color: Color(0xFF7C839B))),
+                Text('($reviews) • $distance', style: const TextStyle(fontSize: 14, color: AppColors.textFaint)),
               ],
             ),
             const SizedBox(height: 12),
@@ -424,10 +425,10 @@ class DashboardScreen extends StatelessWidget {
               children: tags.map((tag) => Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEFF4FF),
-                  borderRadius: BorderRadius.circular(4),
+                  color: AppColors.surfaceHigh,
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                child: Text(tag, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF515F74))),
+                child: Text(tag, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textMuted)),
               )).toList(),
             ),
           ],

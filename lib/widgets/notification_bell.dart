@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/car_provider.dart';
 import '../screens/notifications_screen.dart';
+import '../theme/app_colors.dart';
 
 class NotificationBell extends StatelessWidget {
   final Color color;
 
-  const NotificationBell({super.key, this.color = const Color(0xFF0F172A)});
+  const NotificationBell({super.key, this.color = AppColors.text});
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +45,7 @@ class NotificationBell extends StatelessWidget {
                   width: 8,
                   height: 8,
                   decoration: const BoxDecoration(
-                    color: Colors.red,
+                    color: AppColors.danger,
                     shape: BoxShape.circle,
                   ),
                 ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/maintenance_record.dart';
+import '../theme/app_colors.dart';
 
 void showRecordDetailsModal(BuildContext context, MaintenanceRecord record) {
   final formattedDate = DateFormat('MMM dd, yyyy').format(DateTime.parse(record.date).toLocal());
@@ -8,7 +9,7 @@ void showRecordDetailsModal(BuildContext context, MaintenanceRecord record) {
   
   showModalBottomSheet(
     context: context,
-    backgroundColor: Colors.white,
+    backgroundColor: AppColors.surface,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
     ),
@@ -22,7 +23,7 @@ void showRecordDetailsModal(BuildContext context, MaintenanceRecord record) {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(record.maintenanceType.replaceAll('_', ' '), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                Text(record.maintenanceType.replaceAll('_', ' '), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: AppColors.text)),
                 IconButton(
                   icon: const Icon(Icons.close),
                   onPressed: () => Navigator.pop(context),
@@ -36,9 +37,9 @@ void showRecordDetailsModal(BuildContext context, MaintenanceRecord record) {
             _buildDetailRow('Service Center', record.serviceCenterId ?? 'Verified Workshop'),
             if (record.description.isNotEmpty) ...[
               const SizedBox(height: 16),
-              const Text('Notes', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF515F74))),
+              const Text('Notes', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textMuted)),
               const SizedBox(height: 4),
-              Text(record.description, style: const TextStyle(fontSize: 14, color: Color(0xFF0F172A))),
+              Text(record.description, style: const TextStyle(fontSize: 14, color: AppColors.text)),
             ],
             const SizedBox(height: 32),
           ],
@@ -54,8 +55,8 @@ Widget _buildDetailRow(String label, String value) {
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: const TextStyle(color: Color(0xFF515F74), fontSize: 14)),
-        Text(value, style: const TextStyle(color: Color(0xFF0F172A), fontSize: 14, fontWeight: FontWeight.bold)),
+        Text(label, style: const TextStyle(color: AppColors.textMuted, fontSize: 14)),
+        Text(value, style: const TextStyle(color: AppColors.text, fontSize: 14, fontWeight: FontWeight.w600)),
       ],
     ),
   );
@@ -64,7 +65,7 @@ Widget _buildDetailRow(String label, String value) {
 void showScheduledServiceModal(BuildContext context, String title, String dueInfo) {
   showModalBottomSheet(
     context: context,
-    backgroundColor: Colors.white,
+    backgroundColor: AppColors.surface,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
     ),
@@ -78,7 +79,7 @@ void showScheduledServiceModal(BuildContext context, String title, String dueInf
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: AppColors.text)),
                 IconButton(
                   icon: const Icon(Icons.close),
                   onPressed: () => Navigator.pop(context),
@@ -86,24 +87,24 @@ void showScheduledServiceModal(BuildContext context, String title, String dueInf
               ],
             ),
             const SizedBox(height: 16),
-            const Text('Status', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF515F74))),
+            const Text('Status', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textMuted)),
             const SizedBox(height: 4),
-            Text(dueInfo, style: const TextStyle(fontSize: 14, color: Color(0xFF0F172A))),
+            Text(dueInfo, style: const TextStyle(fontSize: 14, color: AppColors.text)),
             const SizedBox(height: 16),
-            const Text('Description', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF515F74))),
+            const Text('Description', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textMuted)),
             const SizedBox(height: 4),
-            const Text('A comprehensive check and replacement of critical engine components as per manufacturer specifications.', style: TextStyle(fontSize: 14, color: Color(0xFF0F172A))),
+            const Text('A comprehensive check and replacement of critical engine components as per manufacturer specifications.', style: TextStyle(fontSize: 14, color: AppColors.text)),
             const SizedBox(height: 32),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () => Navigator.pop(context),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
+                  backgroundColor: AppColors.accentDeep,
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 ),
-                child: const Text('BOOK NOW', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)),
+                child: const Text('BOOK NOW', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.text)),
               ),
             ),
           ],

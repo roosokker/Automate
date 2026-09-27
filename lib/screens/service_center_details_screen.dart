@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/service_center.dart';
+import '../theme/app_colors.dart';
 
 class ServiceCenterDetailsScreen extends StatelessWidget {
   final ServiceCenter serviceCenter;
@@ -11,12 +12,12 @@ class ServiceCenterDetailsScreen extends StatelessWidget {
     final bool isVerified = serviceCenter.type == 'AUTHORIZED';
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.bg,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.bg,
         elevation: 0,
-        title: Text(serviceCenter.name, style: const TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.bold)),
-        iconTheme: const IconThemeData(color: Color(0xFF0F172A)),
+        title: Text(serviceCenter.name, style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600)),
+        iconTheme: const IconThemeData(color: AppColors.text),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -27,8 +28,8 @@ class ServiceCenterDetailsScreen extends StatelessWidget {
               height: 200,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: const Color(0xFFF8FAFC),
-                borderRadius: BorderRadius.circular(12),
+                color: AppColors.surfaceHigh,
+                borderRadius: BorderRadius.circular(14),
                 image: const DecorationImage(
                   image: NetworkImage('https://images.unsplash.com/photo-1520340356584-f9917d1e5113?ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80'),
                   fit: BoxFit.cover,
@@ -42,11 +43,11 @@ class ServiceCenterDetailsScreen extends StatelessWidget {
                 Expanded(
                   child: Text(
                     serviceCenter.name,
-                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w500, color: AppColors.text),
                   ),
                 ),
                 if (isVerified)
-                  const Icon(Icons.verified, color: Colors.blue, size: 28),
+                  const Icon(Icons.verified, color: AppColors.accent, size: 28),
               ],
             ),
             const SizedBox(height: 8),
@@ -55,45 +56,45 @@ class ServiceCenterDetailsScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE5EEFF),
-                    borderRadius: BorderRadius.circular(4),
+                    color: AppColors.surfaceHigh,
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Text(serviceCenter.type.replaceAll('_', ' '), style: const TextStyle(fontSize: 12, color: Colors.blue, fontWeight: FontWeight.bold)),
+                  child: Text(serviceCenter.type.replaceAll('_', ' '), style: const TextStyle(fontSize: 12, color: AppColors.accent, fontWeight: FontWeight.w600)),
                 ),
                 const SizedBox(width: 12),
-                const Icon(Icons.star, color: Colors.amber, size: 16),
+                const Icon(Icons.star, color: AppColors.warn, size: 16),
                 const SizedBox(width: 4),
-                const Text('4.8 (120 reviews)', style: TextStyle(color: Color(0xFF515F74), fontSize: 14)),
+                const Text('4.8 (120 reviews)', style: TextStyle(color: AppColors.textMuted, fontSize: 14)),
               ],
             ),
             const SizedBox(height: 24),
-            const Text('Location', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+            const Text('Location', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColors.text)),
             const SizedBox(height: 8),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.location_on, color: Color(0xFF64748B), size: 20),
+                const Icon(Icons.location_on, color: AppColors.textFaint, size: 20),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     '${serviceCenter.address}, ${serviceCenter.city}',
-                    style: const TextStyle(fontSize: 14, color: Color(0xFF334155)),
+                    style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
             if (serviceCenter.phone != null) ...[
-              const Text('Contact', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+              const Text('Contact', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColors.text)),
               const SizedBox(height: 8),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.phone, color: Color(0xFF64748B), size: 20),
+                  const Icon(Icons.phone, color: AppColors.textFaint, size: 20),
                   const SizedBox(width: 8),
                   Text(
                     serviceCenter.phone!,
-                    style: const TextStyle(fontSize: 14, color: Color(0xFF334155)),
+                    style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
                   ),
                 ],
               ),
@@ -108,11 +109,11 @@ class ServiceCenterDetailsScreen extends StatelessWidget {
           child: ElevatedButton(
             onPressed: () {},
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF0F172A),
+              backgroundColor: AppColors.accentDeep,
               padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             ),
-            child: const Text('Book Appointment', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+            child: const Text('Book Appointment', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.text)),
           ),
         ),
       ),

@@ -10,6 +10,7 @@ import 'notifications_screen.dart';
 import '../widgets/notification_bell.dart';
 import 'profile_screen.dart';
 import 'specialists_list_screen.dart';
+import '../theme/app_colors.dart';
 
 class VehicleDetailsScreen extends StatefulWidget {
   const VehicleDetailsScreen({super.key});
@@ -52,26 +53,26 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen> {
         return DefaultTabController(
       length: 4,
       child: Scaffold(
-        backgroundColor: const Color(0xFFF8F9FF),
+        backgroundColor: AppColors.bg,
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors.bg,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A)),
+            icon: const Icon(Icons.arrow_back, color: AppColors.text),
             onPressed: () => Navigator.pop(context),
           ),
           title: const Text(
             'AutoMate',
             style: TextStyle(
               fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF0F172A),
+              fontWeight: FontWeight.w600,
+              color: AppColors.text,
             ),
           ),
           actions: [
             const NotificationBell(),
             PopupMenuButton<String>(
-              icon: const Icon(Icons.more_vert, color: Color(0xFF0F172A)),
+              icon: const Icon(Icons.more_vert, color: AppColors.text),
               onSelected: (value) async {
                 if (value == 'edit') {
                   Navigator.pushNamed(context, '/add-vehicle', arguments: _carId);
@@ -85,7 +86,7 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen> {
                         TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('CANCEL')),
                         TextButton(
                           onPressed: () => Navigator.pop(context, true),
-                          child: const Text('DELETE', style: TextStyle(color: Colors.red)),
+                          child: const Text('DELETE', style: TextStyle(color: AppColors.danger)),
                         ),
                       ],
                     ),
@@ -110,7 +111,7 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen> {
                 ),
                 const PopupMenuItem(
                   value: 'delete',
-                  child: Text('Delete Vehicle', style: TextStyle(color: Colors.red)),
+                  child: Text('Delete Vehicle', style: TextStyle(color: AppColors.danger)),
                 ),
               ],
             ),
@@ -142,10 +143,10 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen> {
                 delegate: _SliverAppBarDelegate(
                   const TabBar(
                     isScrollable: true,
-                    labelColor: Color(0xFF0F172A),
-                    unselectedLabelColor: Color(0xFF515F74),
-                    indicatorColor: Color(0xFF0F172A),
-                    labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 1),
+                    labelColor: AppColors.text,
+                    unselectedLabelColor: AppColors.textMuted,
+                    indicatorColor: AppColors.accent,
+                    labelStyle: TextStyle(fontWeight: FontWeight.w600, fontSize: 12, letterSpacing: 1),
                     tabs: [
                       Tab(text: 'OVERVIEW'),
                       Tab(text: 'SERVICES'),
@@ -171,7 +172,7 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen> {
             Navigator.pushNamed(context, '/add-record', arguments: _carId!);
           },
           backgroundColor: Theme.of(context).primaryColor,
-          child: const Icon(Icons.add, color: Colors.white),
+          child: const Icon(Icons.add, color: AppColors.text),
         ),
       ),
     );
@@ -186,7 +187,7 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
       builder: (context) {
         return StatefulBuilder(
@@ -202,9 +203,9 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text('Update Mileage', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  const Text('Update Mileage', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
                   const SizedBox(height: 8),
-                  Text('Current mileage: ${car.currentMileage} km', style: const TextStyle(color: Color(0xFF515F74))),
+                  Text('Current mileage: ${car.currentMileage} km', style: const TextStyle(color: AppColors.textMuted)),
                   const SizedBox(height: 24),
                   TextField(
                     controller: mileageController,
@@ -244,7 +245,7 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen> {
                             if (success) {
                               Navigator.pop(context);
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Mileage updated successfully!'), backgroundColor: Colors.green),
+                                const SnackBar(content: Text('Mileage updated successfully!'), backgroundColor: AppColors.accentDeep),
                               );
                             } else {
                               setState(() {
@@ -254,12 +255,12 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen> {
                             }
                           },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF0F172A),
+                      backgroundColor: AppColors.accentDeep,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
                     child: isLoading
-                        ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                        : const Text('Save Odometer Reading', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.text, strokeWidth: 2))
+                        : const Text('Save Odometer Reading', style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600)),
                   ),
                   const SizedBox(height: 32),
                 ],
@@ -276,7 +277,7 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen> {
     final formattedMileage = '${numberFormat.format(car.currentMileage)} km';
     
     return Container(
-      color: Colors.white,
+      color: AppColors.surface,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -286,8 +287,8 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen> {
             width: double.infinity,
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: const Color(0xFF2C2C3E),
-              borderRadius: BorderRadius.circular(8),
+              color: AppColors.surfaceLow,
+              borderRadius: BorderRadius.circular(12),
               image: const DecorationImage(
                 image: NetworkImage('https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=2070&auto=format&fit=crop'), // Placeholder Mercedes image
                 fit: BoxFit.cover,
@@ -301,15 +302,15 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.9),
+                      color: AppColors.surface.withValues(alpha: 0.9),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.circle, color: Color(0xFF0F172A), size: 8),
+                        Icon(Icons.circle, color: AppColors.text, size: 8),
                         SizedBox(width: 6),
-                        Text('Active', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                        Text('Active', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.text)),
                       ],
                     ),
                   ),
@@ -327,11 +328,11 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('${car.year}', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF45464D))),
+                    Text('${car.year}', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
                     const SizedBox(height: 4),
-                    Text(car.displayName, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                    Text(car.displayName, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w500, color: AppColors.text)),
                     const SizedBox(height: 4),
-                    Text('Plate: Not Assigned', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: const Color(0xFF0F172A).withValues(alpha: 0.8))),
+                    Text('Plate: Not Assigned', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.text.withValues(alpha: 0.8))),
                   ],
                 ),
                 GestureDetector(
@@ -341,10 +342,10 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      border: Border.all(color: const Color(0xFFC6C6CD)),
-                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppColors.lineStrong),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(Icons.edit, size: 20, color: Color(0xFF0F172A)),
+                    child: const Icon(Icons.edit, size: 20, color: AppColors.text),
                   ),
                 ),
               ],
@@ -377,9 +378,9 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FF),
-        border: Border.all(color: const Color(0xFFE5EEFF)),
-        borderRadius: BorderRadius.circular(8),
+        color: AppColors.surfaceHigh,
+        border: Border.all(color: AppColors.line),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -389,17 +390,17 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen> {
             children: [
               Row(
                 children: [
-                  Icon(icon, size: 14, color: const Color(0xFF515F74)),
+                  Icon(icon, size: 14, color: AppColors.textMuted),
                   const SizedBox(width: 6),
-                  Text(title, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF45464D))),
+                  Text(title, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
                 ],
               ),
               if (showEdit)
-                const Icon(Icons.edit, size: 14, color: Color(0xFF515F74)),
+                const Icon(Icons.edit, size: 14, color: AppColors.textMuted),
             ],
           ),
           const SizedBox(height: 8),
-          Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+          Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.text)),
         ],
       ),
     );
@@ -428,7 +429,7 @@ class _OverviewTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Vehicle Health', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const Text('Vehicle Health', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
           const SizedBox(height: 12),
           GridView.count(
             crossAxisCount: 2,
@@ -449,10 +450,10 @@ class _OverviewTab extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Upcoming Reminders', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              const Text('Upcoming Reminders', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               GestureDetector(
                 onTap: () => DefaultTabController.of(context).animateTo(3),
-                child: Text('View All', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A).withValues(alpha: 0.8))),
+                child: Text('View All', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.text.withValues(alpha: 0.8))),
               ),
             ],
           ),
@@ -460,7 +461,7 @@ class _OverviewTab extends StatelessWidget {
           if (reminders.isEmpty)
             const Padding(
               padding: EdgeInsets.all(16.0),
-              child: Text('No upcoming reminders', style: TextStyle(color: Color(0xFF515F74))),
+              child: Text('No upcoming reminders', style: TextStyle(color: AppColors.textMuted)),
             )
           else
             ...reminders.map((reminder) {
@@ -489,9 +490,9 @@ class _OverviewTab extends StatelessWidget {
             children: [
               const Row(
                 children: [
-                  Icon(Icons.storefront, size: 20, color: Color(0xFF0F172A)),
+                  Icon(Icons.storefront, size: 20, color: AppColors.text),
                   SizedBox(width: 8),
-                  Text('Nearby Specialists', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text('Nearby Specialists', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                 ],
               ),
               GestureDetector(
@@ -501,7 +502,7 @@ class _OverviewTab extends StatelessWidget {
                     MaterialPageRoute(builder: (_) => const SpecialistsListScreen()),
                   );
                 },
-                child: Text('View All', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A).withValues(alpha: 0.8))),
+                child: Text('View All', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.text.withValues(alpha: 0.8))),
               ),
             ],
           ),
@@ -518,12 +519,12 @@ class _OverviewTab extends StatelessWidget {
           ),
           const SizedBox(height: 24),
 
-          const Text('Service Timeline', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const Text('Service Timeline', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
           const SizedBox(height: 16),
           if (records.isEmpty)
             const Padding(
               padding: EdgeInsets.all(16.0),
-              child: Text('No service history available', style: TextStyle(color: Color(0xFF515F74))),
+              child: Text('No service history available', style: TextStyle(color: AppColors.textMuted)),
             )
           else
             ...records.take(3).toList().asMap().entries.map((entry) {
@@ -548,9 +549,9 @@ class _OverviewTab extends StatelessWidget {
             child: const Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('View Full History', style: TextStyle(color: Color(0xFF515F74))),
+                Text('View Full History', style: TextStyle(color: AppColors.textMuted)),
                 SizedBox(width: 4),
-                Icon(Icons.arrow_forward, size: 16, color: Color(0xFF515F74)),
+                Icon(Icons.arrow_forward, size: 16, color: AppColors.textMuted),
               ],
             ),
           )
@@ -564,18 +565,18 @@ class _OverviewTab extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: isAlert ? const Color(0xFFFFF5F5) : Colors.white,
-        border: Border.all(color: isAlert ? const Color(0xFFFFCDD2) : const Color(0xFFE5EEFF)),
-        borderRadius: BorderRadius.circular(8),
+        color: isAlert ? AppColors.dangerTint : AppColors.surface,
+        border: Border.all(color: isAlert ? AppColors.dangerLine : AppColors.line),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 20, color: isAlert ? const Color(0xFFD32F2F) : const Color(0xFF0F172A)),
+          Icon(icon, size: 20, color: isAlert ? AppColors.danger : AppColors.text),
           const SizedBox(height: 4),
-          Text(title, style: TextStyle(fontSize: 10, color: isAlert ? const Color(0xFFD32F2F) : const Color(0xFF515F74), fontWeight: FontWeight.bold)),
+          Text(title, style: TextStyle(fontSize: 10, color: isAlert ? AppColors.danger : AppColors.textMuted, fontWeight: FontWeight.w600)),
           const SizedBox(height: 2),
-          Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: isAlert ? const Color(0xFFD32F2F) : const Color(0xFF0F172A))),
+          Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: isAlert ? AppColors.danger : AppColors.text)),
         ],
       ),
     );
@@ -585,42 +586,42 @@ class _OverviewTab extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: const Color(0xFFE5EEFF)),
-        borderRadius: BorderRadius.circular(8),
+        color: AppColors.surface,
+        border: Border.all(color: AppColors.line),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: isUrgent ? const Color(0xFFFFEBEE) : const Color(0xFFE5EEFF),
-              borderRadius: BorderRadius.circular(8),
+              color: isUrgent ? AppColors.dangerTint : AppColors.surfaceHigh,
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: isUrgent ? const Color(0xFFD32F2F) : const Color(0xFF515F74), size: 20),
+            child: Icon(icon, color: isUrgent ? AppColors.danger : AppColors.textMuted, size: 20),
           ),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title.replaceAll('_', ' '), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                Text(title.replaceAll('_', ' '), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
                 const SizedBox(height: 2),
-                Text(subtitle, style: const TextStyle(fontSize: 12, color: Color(0xFF515F74))),
+                Text(subtitle, style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
               ],
             ),
           ),
           ElevatedButton(
             onPressed: onPressed ?? () {},
             style: ElevatedButton.styleFrom(
-              backgroundColor: isUrgent ? const Color(0xFF0F172A) : Colors.white,
-              foregroundColor: isUrgent ? Colors.white : const Color(0xFF0F172A),
-              side: isUrgent ? BorderSide.none : const BorderSide(color: Color(0xFFC6C6CD)),
+              backgroundColor: isUrgent ? AppColors.accentDeep : AppColors.surface,
+              foregroundColor: isUrgent ? AppColors.text : AppColors.text,
+              side: isUrgent ? BorderSide.none : const BorderSide(color: AppColors.lineStrong),
               elevation: 0,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               minimumSize: const Size(0, 36),
             ),
-            child: Text(action, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+            child: Text(action, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12)),
           ),
         ],
       ),
@@ -631,9 +632,9 @@ class _OverviewTab extends StatelessWidget {
     return Container(
       width: 240,
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: const Color(0xFFE5EEFF)),
-        borderRadius: BorderRadius.circular(8),
+        color: AppColors.surface,
+        border: Border.all(color: AppColors.line),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -641,26 +642,26 @@ class _OverviewTab extends StatelessWidget {
           Container(
             height: 100,
             decoration: const BoxDecoration(
-              color: Color(0xFFDCE9FF),
+              color: AppColors.accentTint,
               borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
             ),
             child: Stack(
               children: [
-                const Center(child: Icon(Icons.image, color: Color(0xFF515F74))),
+                const Center(child: Icon(Icons.image, color: AppColors.textMuted)),
                 Positioned(
                   top: 8,
                   right: 8,
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(4),
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
                       children: [
                         const Icon(Icons.star, size: 10),
                         const SizedBox(width: 2),
-                        Text(rating, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                        Text(rating, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600)),
                       ],
                     ),
                   ),
@@ -673,14 +674,14 @@ class _OverviewTab extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                Text(subtitle, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                Text(subtitle, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.text)),
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    const Icon(Icons.location_on_outlined, size: 14, color: Color(0xFF515F74)),
+                    const Icon(Icons.location_on_outlined, size: 14, color: AppColors.textMuted),
                     const SizedBox(width: 4),
-                    Text(distance, style: const TextStyle(fontSize: 12, color: Color(0xFF515F74))),
+                    Text(distance, style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -690,7 +691,7 @@ class _OverviewTab extends StatelessWidget {
                       child: OutlinedButton(
                         onPressed: () {},
                         style: OutlinedButton.styleFrom(
-                          backgroundColor: const Color(0xFFE5EEFF),
+                          backgroundColor: AppColors.surfaceHigh,
                           side: BorderSide.none,
                           padding: EdgeInsets.zero,
                           minimumSize: const Size(0, 32),
@@ -698,9 +699,9 @@ class _OverviewTab extends StatelessWidget {
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.phone_outlined, size: 14, color: Color(0xFF0F172A)),
+                            Icon(Icons.phone_outlined, size: 14, color: AppColors.text),
                             SizedBox(width: 4),
-                            Text('Call', style: TextStyle(fontSize: 12, color: Color(0xFF0F172A), fontWeight: FontWeight.bold)),
+                            Text('Call', style: TextStyle(fontSize: 12, color: AppColors.text, fontWeight: FontWeight.w600)),
                           ],
                         ),
                       ),
@@ -710,16 +711,16 @@ class _OverviewTab extends StatelessWidget {
                       child: ElevatedButton(
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
+                          backgroundColor: AppColors.accentDeep,
                           padding: EdgeInsets.zero,
                           minimumSize: const Size(0, 32),
                         ),
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.directions, size: 14, color: Colors.white),
+                            Icon(Icons.directions, size: 14, color: AppColors.text),
                             SizedBox(width: 4),
-                            Text('Route', style: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold)),
+                            Text('Route', style: TextStyle(fontSize: 12, color: AppColors.text, fontWeight: FontWeight.w600)),
                           ],
                         ),
                       ),
@@ -746,21 +747,21 @@ class _OverviewTab extends StatelessWidget {
                 Container(
                   width: 2,
                   height: 12,
-                  color: isFirst ? Colors.transparent : const Color(0xFFC6C6CD),
+                  color: isFirst ? Colors.transparent : AppColors.surfaceHigh,
                 ),
                 Container(
                   width: 12,
                   height: 12,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: isFirst ? const Color(0xFF0F172A) : const Color(0xFFC6C6CD), width: 2),
+                    border: Border.all(color: isFirst ? AppColors.accent : AppColors.lineStrong, width: 2),
                   ),
-                  child: isFirst ? Center(child: Container(width: 4, height: 4, decoration: const BoxDecoration(color: Color(0xFF0F172A), shape: BoxShape.circle))) : null,
+                  child: isFirst ? Center(child: Container(width: 4, height: 4, decoration: const BoxDecoration(color: AppColors.accent, shape: BoxShape.circle))) : null,
                 ),
                 Expanded(
                   child: Container(
                     width: 2,
-                    color: isLast ? Colors.transparent : const Color(0xFFC6C6CD),
+                    color: isLast ? Colors.transparent : AppColors.surfaceHigh,
                   ),
                 ),
               ],
@@ -776,29 +777,29 @@ class _OverviewTab extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(date, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                  Text(date, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.text)),
                   const SizedBox(height: 8),
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: const Color(0xFFE5EEFF)),
-                      borderRadius: BorderRadius.circular(8),
+                      color: AppColors.surface,
+                      border: Border.all(color: AppColors.line),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
-                            const Icon(Icons.build_circle_outlined, size: 16, color: Color(0xFF0F172A)),
+                            const Icon(Icons.build_circle_outlined, size: 16, color: AppColors.text),
                             const SizedBox(width: 8),
-                            Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                            Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.text)),
                           ],
                         ),
                         if (description.isNotEmpty) ...[
                           const SizedBox(height: 4),
-                          Text(description, style: const TextStyle(fontSize: 12, color: Color(0xFF515F74))),
+                          Text(description, style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
                         ],
                       ],
                     ),
@@ -833,8 +834,8 @@ class _ServicesTab extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Scheduled Services', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              const Icon(Icons.calendar_month, color: Color(0xFF515F74)),
+              const Text('Scheduled Services', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              const Icon(Icons.calendar_month, color: AppColors.textMuted),
             ],
           ),
           const SizedBox(height: 12),
@@ -843,39 +844,39 @@ class _ServicesTab extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: const Color(0xFFE5EEFF)),
-                borderRadius: BorderRadius.circular(8),
+                color: AppColors.surface,
+                border: Border.all(color: AppColors.line),
+                borderRadius: BorderRadius.circular(12),
               ),
             child: Row(
               children: [
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFDCE9FF),
-                    borderRadius: BorderRadius.circular(8),
+                    color: AppColors.accentTint,
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(Icons.settings_suggest, color: Color(0xFF0F172A)),
+                  child: const Icon(Icons.settings_suggest, color: AppColors.text),
                 ),
                 const SizedBox(width: 16),
                 const Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Major Engine Service', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                      Text('Major Engine Service', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                       SizedBox(height: 4),
-                      Text('Due in 1,240 km • Oct 24, 2024', style: TextStyle(fontSize: 12, color: Color(0xFF515F74))),
+                      Text('Due in 1,240 km • Oct 24, 2024', style: TextStyle(fontSize: 12, color: AppColors.textMuted)),
                     ],
                   ),
                 ),
                 ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
+                    backgroundColor: AppColors.accentDeep,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     minimumSize: const Size(0, 36),
                   ),
-                  child: const Text('BOOK', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                  child: const Text('BOOK', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
                 ),
               ],
             ),
@@ -886,13 +887,13 @@ class _ServicesTab extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Service History', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              const Text('Service History', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: () => DefaultTabController.of(context).animateTo(2),
                 child: Row(
                   children: [
-                    const Text('VIEW ALL', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                    const Text('VIEW ALL', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, letterSpacing: 1)),
                     const SizedBox(width: 4),
                     const Icon(Icons.chevron_right, size: 16),
                   ],
@@ -905,7 +906,7 @@ class _ServicesTab extends StatelessWidget {
           if (records.isEmpty)
             const Padding(
               padding: EdgeInsets.all(16.0),
-              child: Text('No service history available', style: TextStyle(color: Color(0xFF515F74))),
+              child: Text('No service history available', style: TextStyle(color: AppColors.textMuted)),
             )
           else
             ...records.asMap().entries.map((entry) {
@@ -942,21 +943,21 @@ class _ServicesTab extends StatelessWidget {
                 Container(
                   width: 1,
                   height: 16,
-                  color: isFirst ? Colors.transparent : const Color(0xFFC6C6CD),
+                  color: isFirst ? Colors.transparent : AppColors.surfaceHigh,
                 ),
                 Container(
                   width: 14,
                   height: 14,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white,
-                    border: Border.all(color: isFirst ? const Color(0xFF0F172A) : const Color(0xFFC6C6CD), width: 2),
+                    color: AppColors.surface,
+                    border: Border.all(color: isFirst ? AppColors.accent : AppColors.lineStrong, width: 2),
                   ),
                 ),
                 Expanded(
                   child: Container(
                     width: 1,
-                    color: isLast ? Colors.transparent : const Color(0xFFC6C6CD),
+                    color: isLast ? Colors.transparent : AppColors.surfaceHigh,
                   ),
                 ),
               ],
@@ -972,9 +973,9 @@ class _ServicesTab extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: const Color(0xFFE5EEFF)),
-                  borderRadius: BorderRadius.circular(8),
+                  color: AppColors.surface,
+                  border: Border.all(color: AppColors.line),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -982,22 +983,22 @@ class _ServicesTab extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(date, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1, color: Color(0xFF0F172A))),
-                        Text(price, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                        Text(date, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, letterSpacing: 1, color: AppColors.text)),
+                        Text(price, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.text)),
                       ],
                     ),
                     const SizedBox(height: 8),
-                    Text(title, style: const TextStyle(fontSize: 16, color: Color(0xFF0F172A))),
+                    Text(title, style: const TextStyle(fontSize: 16, color: AppColors.text)),
                     const SizedBox(height: 12),
                     Row(
                       children: [
-                        const Icon(Icons.speed, size: 14, color: Color(0xFF515F74)),
+                        const Icon(Icons.speed, size: 14, color: AppColors.textMuted),
                         const SizedBox(width: 4),
-                        Text(mileage, style: const TextStyle(fontSize: 12, color: Color(0xFF515F74))),
+                        Text(mileage, style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
                         const SizedBox(width: 16),
-                        const Icon(Icons.verified_outlined, size: 14, color: Color(0xFF515F74)),
+                        const Icon(Icons.verified_outlined, size: 14, color: AppColors.textMuted),
                         const SizedBox(width: 4),
-                        Expanded(child: Text(footerTag, style: const TextStyle(fontSize: 12, color: Color(0xFF515F74)), overflow: TextOverflow.ellipsis)),
+                        Expanded(child: Text(footerTag, style: const TextStyle(fontSize: 12, color: AppColors.textMuted), overflow: TextOverflow.ellipsis)),
                       ],
                     ),
                   ],
@@ -1025,7 +1026,7 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
-      color: Colors.white,
+      color: AppColors.surface,
       child: _tabBar,
     );
   }
@@ -1056,27 +1057,27 @@ class _ExpensesTab extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: const Color(0xFF0F172A),
-                borderRadius: BorderRadius.circular(12),
+                color: AppColors.accentDeep,
+                borderRadius: BorderRadius.circular(14),
               ),
               child: Row(
                 children: [
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
+                      color: AppColors.surface.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(14),
                     ),
-                    child: const Icon(Icons.account_balance_wallet, color: Colors.white, size: 32),
+                    child: const Icon(Icons.account_balance_wallet, color: AppColors.text, size: 32),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Total Maintenance Expenses', style: TextStyle(color: Colors.white70, fontSize: 14)),
+                        const Text('Total Maintenance Expenses', style: TextStyle(color: AppColors.textMuted, fontSize: 14)),
                         const SizedBox(height: 4),
-                        Text('EGP ${numberFormat.format(totalExpenses)}', style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                        Text('EGP ${numberFormat.format(totalExpenses)}', style: const TextStyle(color: AppColors.text, fontSize: 24, fontWeight: FontWeight.w500)),
                       ],
                     ),
                   ),
@@ -1084,12 +1085,12 @@ class _ExpensesTab extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            const Text('Expense History', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text('Expense History', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
             const SizedBox(height: 16),
             if (records.isEmpty)
               const Center(child: Padding(
                 padding: EdgeInsets.all(32.0),
-                child: Text('No expenses recorded yet', style: TextStyle(color: Color(0xFF515F74))),
+                child: Text('No expenses recorded yet', style: TextStyle(color: AppColors.textMuted)),
               ))
             else
               ...records.map((record) => GestureDetector(
@@ -1099,9 +1100,9 @@ class _ExpensesTab extends StatelessWidget {
                   margin: const EdgeInsets.only(bottom: 12),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFFE5EEFF)),
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.line),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1110,13 +1111,13 @@ class _ExpensesTab extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(record.maintenanceType.replaceAll('_', ' '), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                          Text(record.maintenanceType.replaceAll('_', ' '), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
                           const SizedBox(height: 4),
-                          Text(DateFormat('MMM dd, yyyy').format(DateTime.parse(record.date).toLocal()), style: const TextStyle(color: Color(0xFF515F74), fontSize: 12)),
+                          Text(DateFormat('MMM dd, yyyy').format(DateTime.parse(record.date).toLocal()), style: const TextStyle(color: AppColors.textMuted, fontSize: 12)),
                         ],
                       ),
                     ),
-                    Text('EGP ${numberFormat.format(record.cost)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF0F172A))),
+                    Text('EGP ${numberFormat.format(record.cost)}', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: AppColors.text)),
                   ],
                 ),
                 ),
@@ -1143,12 +1144,12 @@ class _RemindersTab extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Maintenance Reminders', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text('Maintenance Reminders', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
             const SizedBox(height: 16),
             if (reminders.isEmpty)
               const Center(child: Padding(
                 padding: EdgeInsets.all(32.0),
-                child: Text('No active reminders', style: TextStyle(color: Color(0xFF515F74))),
+                child: Text('No active reminders', style: TextStyle(color: AppColors.textMuted)),
               ))
             else
               ...reminders.map((reminder) {
@@ -1156,19 +1157,19 @@ class _RemindersTab extends StatelessWidget {
                 IconData statusIcon;
                 switch (reminder.status) {
                   case 'OVERDUE':
-                    statusColor = Colors.red;
+                    statusColor = AppColors.danger;
                     statusIcon = Icons.error_outline;
                     break;
                   case 'DUE':
-                    statusColor = Colors.orange;
+                    statusColor = AppColors.warn;
                     statusIcon = Icons.warning_amber_rounded;
                     break;
                   case 'UPCOMING':
-                    statusColor = Colors.blue;
+                    statusColor = AppColors.accent;
                     statusIcon = Icons.info_outline;
                     break;
                   default:
-                    statusColor = Colors.green;
+                    statusColor = AppColors.accent;
                     statusIcon = Icons.check_circle_outline;
                 }
 
@@ -1179,8 +1180,8 @@ class _RemindersTab extends StatelessWidget {
                   margin: const EdgeInsets.only(bottom: 12),
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: statusColor.withOpacity(0.3)),
                     boxShadow: [
                       BoxShadow(color: statusColor.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2)),
@@ -1190,7 +1191,7 @@ class _RemindersTab extends StatelessWidget {
                     children: [
                       Container(
                         padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(color: statusColor.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                        decoration: BoxDecoration(color: statusColor.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
                         child: Icon(statusIcon, color: statusColor),
                       ),
                       const SizedBox(width: 16),
@@ -1198,16 +1199,16 @@ class _RemindersTab extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(reminder.maintenanceType.replaceAll('_', ' '), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                            Text(reminder.maintenanceType.replaceAll('_', ' '), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
                             const SizedBox(height: 4),
-                            Text('Due at: $dueText', style: const TextStyle(color: Color(0xFF515F74), fontSize: 14)),
+                            Text('Due at: $dueText', style: const TextStyle(color: AppColors.textMuted, fontSize: 14)),
                           ],
                         ),
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(color: statusColor.withOpacity(0.1), borderRadius: BorderRadius.circular(4)),
-                        child: Text(reminder.status, style: TextStyle(color: statusColor, fontSize: 10, fontWeight: FontWeight.bold)),
+                        decoration: BoxDecoration(color: statusColor.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                        child: Text(reminder.status, style: TextStyle(color: statusColor, fontSize: 10, fontWeight: FontWeight.w600)),
                       ),
                     ],
                   ),

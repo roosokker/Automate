@@ -3,6 +3,7 @@ import 'notifications_screen.dart';
 import '../widgets/notification_bell.dart';
 import '../services/auth_service.dart';
 import 'placeholder_screen.dart';
+import '../theme/app_colors.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -10,16 +11,16 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FF),
+      backgroundColor: AppColors.bg,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: const Color(0xFFF8F9FF),
+        backgroundColor: AppColors.bg,
         elevation: 0,
         title: Text(
           'AutoMate',
           style: TextStyle(
             fontSize: 20,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
             color: Theme.of(context).primaryColor,
           ),
         ),
@@ -56,9 +57,9 @@ class ProfileScreen extends StatelessWidget {
                           width: 100,
                           height: 100,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFE5EEFF),
+                            color: AppColors.surfaceHigh,
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: const Color(0xFFC6C6CD)),
+                            border: Border.all(color: AppColors.lineStrong),
                             image: const DecorationImage(
                               image: NetworkImage('https://i.pravatar.cc/150?img=11'),
                               fit: BoxFit.cover,
@@ -71,17 +72,17 @@ class ProfileScreen extends StatelessWidget {
                           child: Container(
                             padding: const EdgeInsets.all(4),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: AppColors.surface,
                               shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 2),
+                              border: Border.all(color: AppColors.bg, width: 2),
                             ),
                             child: Container(
                               padding: const EdgeInsets.all(4),
                               decoration: const BoxDecoration(
-                                color: Colors.black,
+                                color: AppColors.accentDeep,
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(Icons.settings, color: Colors.white, size: 14),
+                              child: const Icon(Icons.settings, color: AppColors.text, size: 14),
                             ),
                           ),
                         ),
@@ -90,21 +91,21 @@ class ProfileScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                     Text(
                       fullName,
-                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w500, color: AppColors.text),
                     ),
                     const SizedBox(height: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFDCE9FF), // Light blue pill
+                        color: AppColors.accentTint, // Light blue pill
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.workspace_premium_outlined, size: 14, color: Color(0xFF515F74)),
+                          const Icon(Icons.workspace_premium_outlined, size: 14, color: AppColors.textMuted),
                           const SizedBox(width: 4),
-                          Text('Premium Member', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A).withValues(alpha: 0.8))),
+                          Text('Premium Member', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.text.withValues(alpha: 0.8))),
                         ],
                       ),
                     ),
@@ -157,17 +158,17 @@ class ProfileScreen extends StatelessWidget {
                   // Navigate back to Login Screen, clearing history
                   Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
                 },
-                icon: const Icon(Icons.logout, color: Color(0xFFD32F2F)),
+                icon: const Icon(Icons.logout, color: AppColors.danger),
                 label: const Text(
                   'Log Out',
-                  style: TextStyle(color: Color(0xFFD32F2F), fontWeight: FontWeight.bold),
+                  style: TextStyle(color: AppColors.danger, fontWeight: FontWeight.w600),
                 ),
                 style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Color(0xFFFFCDD2)),
-                  backgroundColor: const Color(0xFFFFF5F5),
+                  side: const BorderSide(color: AppColors.dangerLine),
+                  backgroundColor: AppColors.dangerTint,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   minimumSize: const Size(double.infinity, 50),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
               ),
               const SizedBox(height: 32),
@@ -185,14 +186,14 @@ class ProfileScreen extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1, color: Color(0xFF7C839B)),
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, letterSpacing: 1, color: AppColors.textFaint),
         ),
         const SizedBox(height: 8),
         Card(
           elevation: 0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-            side: const BorderSide(color: Color(0xFFE5EEFF), width: 1),
+            borderRadius: BorderRadius.circular(12),
+            side: const BorderSide(color: AppColors.line, width: 1),
           ),
           child: Column(
             children: items,
@@ -210,14 +211,14 @@ class ProfileScreen extends StatelessWidget {
           leading: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: const Color(0xFFE5EEFF),
-              borderRadius: BorderRadius.circular(8),
+              color: AppColors.surfaceHigh,
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: const Color(0xFF0F172A), size: 24),
+            child: Icon(icon, color: AppColors.text, size: 24),
           ),
-          title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF0F172A))),
-          subtitle: Text(subtitle, style: const TextStyle(fontSize: 12, color: Color(0xFF515F74))),
-          trailing: const Icon(Icons.chevron_right, color: Color(0xFF515F74)),
+          title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: AppColors.text)),
+          subtitle: Text(subtitle, style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
+          trailing: const Icon(Icons.chevron_right, color: AppColors.textMuted),
           onTap: () {
             Navigator.push(
               context,
@@ -228,7 +229,7 @@ class ProfileScreen extends StatelessWidget {
           },
         ),
         if (showDivider)
-          const Divider(height: 1, color: Color(0xFFE5EEFF), indent: 16, endIndent: 16),
+          const Divider(height: 1, color: AppColors.line, indent: 16, endIndent: 16),
       ],
     );
   }

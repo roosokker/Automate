@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -15,8 +16,8 @@ class WelcomeScreen extends StatelessWidget {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Color(0xFFE5EEFF), // Light surface tint
-                  Color(0xFFF8F9FF), // Scaffold background
+                  AppColors.surfaceHigh, // Light surface tint
+                  AppColors.surfaceHigh, // Scaffold background
                 ],
                 stops: [0.0, 0.5],
               ),
@@ -39,16 +40,16 @@ class WelcomeScreen extends StatelessWidget {
                             padding: const EdgeInsets.all(6),
                             decoration: BoxDecoration(
                               color: Theme.of(context).primaryColor,
-                              borderRadius: BorderRadius.circular(4),
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Icon(Icons.directions_car, color: Colors.white, size: 20),
+                            child: const Icon(Icons.directions_car, color: AppColors.text, size: 20),
                           ),
                           const SizedBox(width: 8),
                           Text(
                             'AutoMate',
                             style: TextStyle(
                               fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w600,
                               color: Theme.of(context).primaryColor,
                             ),
                           ),
@@ -57,15 +58,15 @@ class WelcomeScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(color: const Color(0xFFC6C6CD)),
+                          color: AppColors.surface,
+                          border: Border.all(color: AppColors.lineStrong),
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.language, size: 16, color: Color(0xFF515F74)),
+                            const Icon(Icons.language, size: 16, color: AppColors.textMuted),
                             const SizedBox(width: 4),
-                            const Text('EN', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF515F74))),
+                            const Text('EN', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textMuted)),
                           ],
                         ),
                       ),
@@ -80,7 +81,7 @@ class WelcomeScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 32,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                       color: Theme.of(context).primaryColor,
                       height: 1.2,
                     ),
@@ -91,7 +92,7 @@ class WelcomeScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 16,
-                      color: Color(0xFF45464D), // on-surface-variant
+                      color: AppColors.textSecondary, // on-surface-variant
                       height: 1.5,
                     ),
                   ),
@@ -120,7 +121,7 @@ class WelcomeScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 12,
-                      color: Color(0xFF7C839B),
+                      color: AppColors.textFaint,
                     ),
                   ),
                 ],

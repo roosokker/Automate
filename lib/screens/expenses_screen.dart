@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../providers/car_provider.dart';
 import '../widgets/record_details_modal.dart';
+import '../theme/app_colors.dart';
 
 class ExpensesScreen extends StatelessWidget {
   const ExpensesScreen({super.key});
@@ -12,16 +13,16 @@ class ExpensesScreen extends StatelessWidget {
     final numberFormat = NumberFormat('#,##0.00');
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FF),
+      backgroundColor: AppColors.bg,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: const Color(0xFFF8F9FF),
+        backgroundColor: AppColors.bg,
         elevation: 0,
         title: Text(
           'Fleet Expenses',
           style: TextStyle(
             fontSize: 20,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
             color: Theme.of(context).primaryColor,
           ),
         ),
@@ -49,7 +50,7 @@ class ExpensesScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF0F172A),
+                      color: AppColors.accentDeep,
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Row(
@@ -57,19 +58,19 @@ class ExpensesScreen extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
+                            color: AppColors.surface.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(14),
                           ),
-                          child: const Icon(Icons.account_balance_wallet, color: Colors.white, size: 32),
+                          child: const Icon(Icons.account_balance_wallet, color: AppColors.text, size: 32),
                         ),
                         const SizedBox(width: 16),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('Total Fleet Expenses', style: TextStyle(color: Colors.white70, fontSize: 14)),
+                              const Text('Total Fleet Expenses', style: TextStyle(color: AppColors.textMuted, fontSize: 14)),
                               const SizedBox(height: 4),
-                              Text('EGP ${numberFormat.format(totalExpenses)}', style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                              Text('EGP ${numberFormat.format(totalExpenses)}', style: const TextStyle(color: AppColors.text, fontSize: 24, fontWeight: FontWeight.w500)),
                             ],
                           ),
                         ),
@@ -77,7 +78,7 @@ class ExpensesScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 32),
-                  const Text('Expense History', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                  const Text('Expense History', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColors.text)),
                   const SizedBox(height: 16),
                   
                   if (allExpenses.isEmpty)
@@ -86,7 +87,7 @@ class ExpensesScreen extends StatelessWidget {
                         padding: EdgeInsets.all(32.0),
                         child: Text(
                           'No expenses recorded yet across your fleet.',
-                          style: TextStyle(color: Color(0xFF515F74)),
+                          style: TextStyle(color: AppColors.textMuted),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -103,12 +104,12 @@ class ExpensesScreen extends StatelessWidget {
                           margin: const EdgeInsets.only(bottom: 12),
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFFE5EEFF)),
+                          color: AppColors.surface,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: AppColors.line),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF0F172A).withOpacity(0.02),
+                              color: AppColors.accent.withOpacity(0.02),
                               blurRadius: 10,
                               offset: const Offset(0, 4),
                             ),
@@ -124,12 +125,12 @@ class ExpensesScreen extends StatelessWidget {
                                 children: [
                                   Row(
                                     children: [
-                                      const Icon(Icons.directions_car, size: 14, color: Color(0xFF515F74)),
+                                      const Icon(Icons.directions_car, size: 14, color: AppColors.textMuted),
                                       const SizedBox(width: 4),
                                       Text(
                                         carName,
                                         style: const TextStyle(
-                                          color: Color(0xFF515F74),
+                                          color: AppColors.textMuted,
                                           fontSize: 12,
                                           fontWeight: FontWeight.w600,
                                         ),
@@ -139,12 +140,12 @@ class ExpensesScreen extends StatelessWidget {
                                   const SizedBox(height: 8),
                                   Text(
                                     record.maintenanceType.replaceAll('_', ' '),
-                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF0F172A)),
+                                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: AppColors.text),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
                                     DateFormat('MMM dd, yyyy').format(DateTime.parse(record.date).toLocal()),
-                                    style: const TextStyle(color: Color(0xFF515F74), fontSize: 12),
+                                    style: const TextStyle(color: AppColors.textMuted, fontSize: 12),
                                   ),
                                 ],
                               ),
@@ -152,12 +153,12 @@ class ExpensesScreen extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFF8F9FF),
-                                borderRadius: BorderRadius.circular(8),
+                                color: AppColors.surfaceHigh,
+                                borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
                                 'EGP ${numberFormat.format(record.cost)}',
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF0F172A)),
+                                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: AppColors.text),
                               ),
                             ),
                           ],

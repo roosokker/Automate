@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/car_provider.dart';
+import '../theme/app_colors.dart';
 
 class AddVehicleScreen extends StatefulWidget {
   const AddVehicleScreen({super.key});
@@ -71,7 +72,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_isEditMode ? 'Vehicle updated successfully!' : 'Vehicle added successfully!'), backgroundColor: Colors.green),
+        SnackBar(content: Text(_isEditMode ? 'Vehicle updated successfully!' : 'Vehicle added successfully!'), backgroundColor: AppColors.accentDeep),
       );
       Navigator.pop(context); // Go back to dashboard/garage
     } else {
@@ -84,17 +85,17 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FF),
+      backgroundColor: AppColors.bg,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.bg,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A)),
+          icon: const Icon(Icons.arrow_back, color: AppColors.text),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           _isEditMode ? 'Edit Vehicle' : 'Add Vehicle',
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColors.text),
         ),
       ),
       body: SingleChildScrollView(
@@ -107,8 +108,8 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
               Card(
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  side: const BorderSide(color: Color(0xFFE5EEFF)),
+                  borderRadius: BorderRadius.circular(14),
+                  side: const BorderSide(color: AppColors.line),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(24.0),
@@ -117,14 +118,14 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                     children: [
                       const Text(
                         'VEHICLE DETAILS',
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF45464D), letterSpacing: 1),
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary, letterSpacing: 1),
                       ),
                       const SizedBox(height: 24),
 
                       // MAKE
                       const Text(
                         'MAKE (e.g. Toyota, BMW)',
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF45464D)),
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
@@ -141,7 +142,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                       // MODEL
                       const Text(
                         'MODEL (e.g. Corolla, X5)',
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF45464D)),
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
@@ -158,7 +159,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                       // YEAR
                       const Text(
                         'YEAR',
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF45464D)),
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
@@ -184,7 +185,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                       // MILEAGE
                       const Text(
                         'CURRENT MILEAGE (km)',
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF45464D)),
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
@@ -211,13 +212,13 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
               ElevatedButton(
                 onPressed: _isLoading ? null : _submit,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF0F172A),
+                  backgroundColor: AppColors.accentDeep,
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 child: _isLoading
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                    : Text(_isEditMode ? 'Save Changes' : 'Register Vehicle', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.text, strokeWidth: 2))
+                    : Text(_isEditMode ? 'Save Changes' : 'Register Vehicle', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               ),
             ],
           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/car_provider.dart';
+import '../theme/app_colors.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
@@ -8,12 +9,12 @@ class NotificationsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.bg,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.bg,
         elevation: 0,
-        title: const Text('Notifications', style: TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.bold)),
-        iconTheme: const IconThemeData(color: Color(0xFF0F172A)),
+        title: const Text('Notifications', style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600)),
+        iconTheme: const IconThemeData(color: AppColors.text),
       ),
       body: Consumer<CarProvider>(
         builder: (context, provider, child) {
@@ -31,7 +32,7 @@ class NotificationsScreen extends StatelessWidget {
                     padding: const EdgeInsets.only(bottom: 12),
                     child: _buildNotificationItem(
                       icon: Icons.error_outline,
-                      iconColor: Colors.red,
+                      iconColor: AppColors.danger,
                       title: 'Overdue: $type',
                       message: 'Your ${car.make} ${car.model} is overdue for $type.',
                       time: 'Action Required',
@@ -50,7 +51,7 @@ class NotificationsScreen extends StatelessWidget {
                     padding: const EdgeInsets.only(bottom: 12),
                     child: _buildNotificationItem(
                       icon: Icons.warning_amber_rounded,
-                      iconColor: Colors.orange,
+                      iconColor: AppColors.warn,
                       title: 'Maintenance Due: $type',
                       message: 'Your ${car.make} ${car.model} is due for $type.',
                       time: 'Soon',
@@ -67,11 +68,11 @@ class NotificationsScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.notifications_none, size: 64, color: Color(0xFFCBD5E1)),
+                  Icon(Icons.notifications_none, size: 64, color: AppColors.neutral600),
                   SizedBox(height: 16),
                   Text(
                     'No new notifications',
-                    style: TextStyle(color: Color(0xFF64748B), fontSize: 16),
+                    style: TextStyle(color: AppColors.textFaint, fontSize: 16),
                   ),
                 ],
               ),
@@ -98,9 +99,9 @@ class NotificationsScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isUnread ? const Color(0xFFF8FAFC) : Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: isUnread ? const Color(0xFFE2E8F0) : const Color(0xFFF1F5F9)),
+        color: isUnread ? AppColors.surfaceHigh : AppColors.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: isUnread ? AppColors.line : AppColors.line),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,14 +124,14 @@ class NotificationsScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      child: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF0F172A))),
+                      child: Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: AppColors.text)),
                     ),
                     const SizedBox(width: 8),
-                    Text(time, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                    Text(time, style: const TextStyle(fontSize: 12, color: AppColors.textFaint)),
                   ],
                 ),
                 const SizedBox(height: 4),
-                Text(message, style: const TextStyle(fontSize: 14, color: Color(0xFF334155))),
+                Text(message, style: const TextStyle(fontSize: 14, color: AppColors.textSecondary)),
               ],
             ),
           ),
@@ -140,7 +141,7 @@ class NotificationsScreen extends StatelessWidget {
               width: 8,
               height: 8,
               margin: const EdgeInsets.only(top: 6),
-              decoration: const BoxDecoration(color: Colors.blue, shape: BoxShape.circle),
+              decoration: const BoxDecoration(color: AppColors.accent, shape: BoxShape.circle),
             ),
           ],
         ],

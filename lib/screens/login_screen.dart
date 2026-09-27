@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import '../theme/app_colors.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -29,7 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FF),
+      backgroundColor: AppColors.bg,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -51,7 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       'MyCar ',
                       style: TextStyle(
                         fontSize: 32,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w600,
                         color: Theme.of(context).primaryColor,
                       ),
                     ),
@@ -59,8 +60,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       'Egypt',
                       style: TextStyle(
                         fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF515F74),
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textMuted,
                       ),
                     ),
                   ],
@@ -73,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     fontSize: 12,
                     letterSpacing: 1.5,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF7C839B),
+                    color: AppColors.textFaint,
                   ),
                 ),
                 const SizedBox(height: 48),
@@ -89,20 +90,20 @@ class _LoginScreenState extends State<LoginScreen> {
                           'Welcome Back',
                           style: TextStyle(
                             fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           _otpSent ? 'Enter the 6-digit code sent to your phone' : 'Sign in securely with your phone number',
-                          style: const TextStyle(fontSize: 14, color: Color(0xFF515F74)),
+                          style: const TextStyle(fontSize: 14, color: AppColors.textMuted),
                         ),
                         const SizedBox(height: 24),
                         
                         if (!_otpSent) ...[
                           const Text(
                             'PHONE NUMBER',
-                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF45464D)),
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
                           ),
                           const SizedBox(height: 8),
                           TextFormField(
@@ -125,7 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ]
                                         .map((country) => DropdownMenuItem(
                                               value: country['code'],
-                                              child: Text(country['name']!, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                                              child: Text(country['name']!, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
                                             ))
                                         .toList(),
                                     onChanged: (value) {
@@ -150,13 +151,13 @@ class _LoginScreenState extends State<LoginScreen> {
                             children: [
                               const Text(
                                 '6-DIGIT OTP CODE',
-                                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF45464D)),
+                                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
                               ),
                               GestureDetector(
                                 onTap: () => setState(() => _otpSent = false),
                                 child: Text(
                                   'Change Phone?',
-                                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor),
+                                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Theme.of(context).primaryColor),
                                 ),
                               ),
                             ],
@@ -181,7 +182,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           if (_isNewUser) ...[
                             const Text(
                               'FULL NAME',
-                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF45464D)),
+                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
                             ),
                             const SizedBox(height: 8),
                             TextFormField(
@@ -235,7 +236,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                             }
                                           });
                                           ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(content: Text('OTP Code sent!'), backgroundColor: Colors.green),
+                                            const SnackBar(content: Text('OTP Code sent!'), backgroundColor: AppColors.accentDeep),
                                           );
                                         } else {
                                           ScaffoldMessenger.of(context).showSnackBar(
@@ -270,7 +271,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     }
                                   },
                             child: _isLoading
-                                ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                                ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.text, strokeWidth: 2))
                                 : const Text('Sign In'),
                           ),
                         ),
@@ -279,15 +280,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         // Or continue with divider
                         Row(
                           children: [
-                            const Expanded(child: Divider(color: Color(0xFFE5EEFF), thickness: 1)),
+                            const Expanded(child: Divider(color: AppColors.line, thickness: 1)),
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 16.0),
                               child: Text(
                                 'OR CONTINUE WITH',
-                                style: TextStyle(fontSize: 10, color: const Color(0xB37C839B), letterSpacing: 1),
+                                style: TextStyle(fontSize: 10, color: AppColors.textFaint, letterSpacing: 1),
                               ),
                             ),
-                            const Expanded(child: Divider(color: Color(0xFFE5EEFF), thickness: 1)),
+                            const Expanded(child: Divider(color: AppColors.line, thickness: 1)),
                           ],
                         ),
                         const SizedBox(height: 24),
@@ -298,10 +299,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             Expanded(
                               child: OutlinedButton.icon(
                                 onPressed: () {},
-                                icon: const Icon(Icons.g_mobiledata, color: Colors.red, size: 24),
-                                label: const Text('Google', style: TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.normal)),
+                                icon: const Icon(Icons.g_mobiledata, color: AppColors.danger, size: 24),
+                                label: const Text('Google', style: TextStyle(color: AppColors.text, fontWeight: FontWeight.normal)),
                                 style: OutlinedButton.styleFrom(
-                                  side: const BorderSide(color: Color(0xFFC6C6CD)),
+                                  side: const BorderSide(color: AppColors.lineStrong),
                                 ),
                               ),
                             ),
@@ -309,10 +310,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             Expanded(
                               child: OutlinedButton.icon(
                                 onPressed: () {},
-                                icon: const Icon(Icons.apple, color: Colors.black, size: 20),
-                                label: const Text('Apple', style: TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.normal)),
+                                icon: const Icon(Icons.apple, color: AppColors.text, size: 20),
+                                label: const Text('Apple', style: TextStyle(color: AppColors.text, fontWeight: FontWeight.normal)),
                                 style: OutlinedButton.styleFrom(
-                                  side: const BorderSide(color: Color(0xFFC6C6CD)),
+                                  side: const BorderSide(color: AppColors.lineStrong),
                                 ),
                               ),
                             ),
@@ -329,12 +330,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   alignment: WrapAlignment.center,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    const Text('Don\'t have an account? ', style: TextStyle(color: Color(0xFF515F74))),
+                    const Text('Don\'t have an account? ', style: TextStyle(color: AppColors.textMuted)),
                     GestureDetector(
                       onTap: () => Navigator.pushReplacementNamed(context, '/register'),
                       child: Text(
                         'Create Account',
-                        style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+                        style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.w600),
                       ),
                     ),
                   ],
@@ -346,7 +347,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(
                     fontSize: 10,
                     letterSpacing: 2,
-                    color: Color(0xFFB9C7E0),
+                    color: AppColors.neutral600,
                   ),
                 ),
               ],
